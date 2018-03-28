@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Autocomplete - Default functionality</title>
+  <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">-->
+  <!-- <link rel="stylesheet" href="/resources/demos/style.css">-->
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  function marcarDicaComoLida(){
+  	$.post( "http://localhost:8080/usuarios/113/dicasProfissionais/NaoLidas/21", function() {
+  		
+  		alert("Dica marcada como lida com sucesso!");	
+    
+    });
+  }
+  
+  $(function() {    
+	   $("#botao").click(function(){
+	      marcarDicaComoLida();
+      });
+  });
+
+  </script>
+</head>
+<body>
+ 
+<div class="ui-widget">
+  <label for="caracteresDigitados">caracteresDigitados: </label>
+  <input id="caracteresDigitados">
+  <input value="Aperte-me!!!" type="button" id="botao">
+  <div id = "x"></div>
+</div>
+ 
+ 
+</body>
+</html>
