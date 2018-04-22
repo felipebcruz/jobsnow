@@ -50,7 +50,7 @@ public class ClientTest {
 	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Before
-	public void setup() {
+	public void _setup() {
 		this.client = mock(HttpClient.class);
 		this.response = mock(HttpResponse.class);
 		this.statusLine = mock(StatusLine.class);
@@ -64,7 +64,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoGetComSucesso() throws Exception {
+	public void _deveExecutarDoGetComSucesso() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(200);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.get)).thenReturn(this.response);
@@ -80,19 +80,19 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveLancarNullPointerExceptionComUrlNull() throws Exception {
+	public void _deveLancarNullPointerExceptionComUrlNull() throws Exception {
 		this.expectedEx.expect(NullPointerException.class);
 		new Client()._doGet(null, null);
 	}
 	
 	@Test
-	public void deveLancarClientProtocolExceptionComUrlVazia() throws Exception {
+	public void _deveLancarClientProtocolExceptionComUrlVazia() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		new Client()._doGet(null, "");
 	}
 	
 	@Test
-	public void deveMostrarMensagemDeErroQuandoStatusDoGetNaoFor200() throws Exception {
+	public void _deveMostrarMensagemDeErroQuandoStatusDoGetNaoFor200() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Falha ao fazer a requisição, HTTP error code: " + 400 + ", motivo do erro: ");
 		when(this.statusLine.getStatusCode()).thenReturn(400);
@@ -111,7 +111,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoHeadERetornarTrue() throws Exception {
+	public void _deveExecutarDoHeadERetornarTrue() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(200);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.head)).thenReturn(this.response);
@@ -125,7 +125,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoHeadERetornarFalse() throws Exception {
+	public void _deveExecutarDoHeadERetornarFalse() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(404);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.head)).thenReturn(this.response);
@@ -140,7 +140,7 @@ public class ClientTest {
 	}
 
 	@Test
-	public void deveExecutarDoHeadERetornarMensagemDeHttpErrorCode() throws Exception {
+	public void _deveExecutarDoHeadERetornarMensagemDeHttpErrorCode() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(400);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.head)).thenReturn(this.response);
@@ -163,7 +163,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoPatchERetornarStatusNoContent() throws Exception {
+	public void _deveExecutarDoPatchERetornarStatusNoContent() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(204);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.patch)).thenReturn(this.response);
@@ -176,7 +176,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoPatchERetornarMensagemDeHttpErrorCode() throws Exception {
+	public void _deveExecutarDoPatchERetornarMensagemDeHttpErrorCode() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(400);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.patch)).thenReturn(this.response);
@@ -199,7 +199,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoDeleteERetornarStatusNoContent() throws Exception {
+	public void _deveExecutarDoDeleteERetornarStatusNoContent() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(204);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.delete)).thenReturn(this.response);
@@ -213,7 +213,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoDeleteERetornarMensagemDeHttpErrorCode() throws Exception {
+	public void _deveExecutarDoDeleteERetornarMensagemDeHttpErrorCode() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(400);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.delete)).thenReturn(this.response);
@@ -236,7 +236,7 @@ public class ClientTest {
 	}
 
 	@Test
-	public void deveExecutarDoPostERetornarIdGerado() throws Exception {
+	public void _deveExecutarDoPostERetornarIdGerado() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(201);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.post)).thenReturn(this.response);
@@ -252,7 +252,7 @@ public class ClientTest {
 	}
 
 	@Test
-	public void deveExecutarDoPostERetornarMensagemDeHttpErrorCode() throws Exception {
+	public void _deveExecutarDoPostERetornarMensagemDeHttpErrorCode() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(400);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.post)).thenReturn(this.response);
@@ -274,7 +274,7 @@ public class ClientTest {
 	}
 	
 	@Test
-	public void deveExecutarDoGetApenasUrl() throws Exception {
+	public void _deveExecutarDoGetApenasUrl() throws Exception {
 		when(this.statusLine.getStatusCode()).thenReturn(200);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.get)).thenReturn(this.response);

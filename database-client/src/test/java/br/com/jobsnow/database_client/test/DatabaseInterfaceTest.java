@@ -41,12 +41,12 @@ public class DatabaseInterfaceTest {
 	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Before
-	public void setup() {
+	public void _setup() {
 		this.client = mock(Client.class);
 	}
 	
 	@Test
-	public void naoDeveSelecionarVariosRegistrosSemTabelaPreenchida() throws Exception {
+	public void _naoDeveSelecionarVariosRegistrosSemTabelaPreenchida() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher a tabela.");
 		String[] ordenacao = null;
@@ -54,7 +54,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void naoDeveSelecionarVariosRegistrosSemCamposSelect() throws Exception {
+	public void _naoDeveSelecionarVariosRegistrosSemCamposSelect() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher o camposSelect.");
 		String[] ordenacao = null;
@@ -62,7 +62,7 @@ public class DatabaseInterfaceTest {
 	}
 
 	@Test
-	public void deveMostrarMensagemDeFalhaQuandoStatusNaoFor200() throws Exception {
+	public void _deveMostrarMensagemDeFalhaQuandoStatusNaoFor200() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("");
 	
@@ -77,7 +77,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void naoDeveSelecionarUmUnicoRegistroSemIdRegistroPreenchido() throws Exception {
+	public void _naoDeveSelecionarUmUnicoRegistroSemIdRegistroPreenchido() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher o idRegistro.");
 		String[] campos = {"teste"};
@@ -85,14 +85,14 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void naoDeveAtualizarUmUnicoRegistroSemCamposMaisSeusNovosValoresPreenchidos() throws Exception {
+	public void _naoDeveAtualizarUmUnicoRegistroSemCamposMaisSeusNovosValoresPreenchidos() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher os camposMaisSeusNovosValores.");
 		new DatabaseInterface("teste",1L, this.client, new HashSet<>())._atualizarUmUnicoRegistro(new LinkedHashSet<>(), null);
 	}
 	
 	@Test
-	public void naoDeveAtualizarUmUnicoRegistroComCamposErrados() throws Exception {
+	public void _naoDeveAtualizarUmUnicoRegistroComCamposErrados() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("");
 		
@@ -110,7 +110,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void naoDeveAlterarStatusUmUnicoRegistroComCamposErrados() throws Exception {
+	public void _naoDeveAlterarStatusUmUnicoRegistroComCamposErrados() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("");
 		
@@ -128,7 +128,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void deveSelecionarVariosRegistros() throws Exception {
+	public void _deveSelecionarVariosRegistros() throws Exception {
         String[] camposSelect = {"id_teste", "teste"};
         HashSet<String> camposTabela = new HashSet<>();
         LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<EspecificacaoCampo>();
@@ -167,7 +167,7 @@ public class DatabaseInterfaceTest {
 	}
 
 	@Test
-	public void deveSelecionarUmUnicoRegistro() throws Exception {
+	public void _deveSelecionarUmUnicoRegistro() throws Exception {
         String[] camposSelect = {"id_teste", "teste"};
         HashSet<String> camposTabela = new HashSet<>();
         camposTabela.add("id_teste");
@@ -192,7 +192,7 @@ public class DatabaseInterfaceTest {
 	}
 
 	@Test
-	public void deveObterTotal() throws Exception {
+	public void _deveObterTotal() throws Exception {
 		LinkedHashSet<FuncaoAgregacao> funcao = new LinkedHashSet<>();
 		
 		funcao.add(new FuncaoAgregacao("count", "*"));
@@ -220,7 +220,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void deveRetornarTrueVerificarExistenciaDadasEstasRestricoes() throws Exception {
+	public void _deveRetornarTrueVerificarExistenciaDadasEstasRestricoes() throws Exception {
 	    when(this.client._doHead(Mockito.any(RequestParamsDTO.class), Mockito.anyString())).thenReturn(true);
 	    
 		boolean existeRegistros = new DatabaseInterface("entrevista",this.client,null)
@@ -232,7 +232,7 @@ public class DatabaseInterfaceTest {
 	}
 
 	@Test
-	public void deveRetornarFalseVerificarExistenciaDadasEstasRestricoes() throws Exception {
+	public void _deveRetornarFalseVerificarExistenciaDadasEstasRestricoes() throws Exception {
 		when(this.client._doHead(Mockito.any(RequestParamsDTO.class), Mockito.anyString())).thenReturn(false);
 		
         boolean existeRegistros = new DatabaseInterface("entrevista",this.client,null)
@@ -244,7 +244,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void deveAtualizarUmUnicoRegistro() throws Exception {
+	public void _deveAtualizarUmUnicoRegistro() throws Exception {
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		HashSet<String> camposTabela = new HashSet<>();
 
@@ -262,7 +262,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void deveAlterarStatusUmUnicoRegistro() throws Exception {
+	public void _deveAlterarStatusUmUnicoRegistro() throws Exception {
 		HashSet<String> camposTabela = new HashSet<>();
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		
@@ -280,7 +280,7 @@ public class DatabaseInterfaceTest {
 	}
 	
 	@Test
-	public void deveInserirUmUnicoRegistro() throws Exception {
+	public void _deveInserirUmUnicoRegistro() throws Exception {
 		HashSet<String> camposTabela = new HashSet<>();
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
         

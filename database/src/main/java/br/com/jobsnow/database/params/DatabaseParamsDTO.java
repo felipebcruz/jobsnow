@@ -1,8 +1,8 @@
-package br.com.jobsnow.database_client.params;
+package br.com.jobsnow.database.params;
 
 import java.util.LinkedHashSet;
 
-public class RequestParamsDTO {
+public class DatabaseParamsDTO {
 	public final Long idRegistro; 
 	public final String tabela;
 	public final String[] camposParaSelecionar;
@@ -13,7 +13,19 @@ public class RequestParamsDTO {
 	public final LinkedHashSet<EspecificacaoCampo> restricoes;
 	public final LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores;
 	
-	private RequestParamsDTO(String[] camposParaSelecionar, 
+	public DatabaseParamsDTO() {
+		this.camposParaSelecionar = null;
+		this.tabela = null;
+		this.joins = null;
+		this.restricoes = null;
+		this.camposParaOrdenacao = null;
+		this.idRegistro = null;
+		this.camposMaisSeusNovosValores = null;
+		this.funcoesAgregacao = null;
+		this.camposParaAgrupamento = null;
+	}
+	
+	private DatabaseParamsDTO(String[] camposParaSelecionar, 
 			String tabela, LinkedHashSet<Join> joins, 
 			LinkedHashSet<EspecificacaoCampo> restricoes,
 			Long idRegistro,
@@ -33,23 +45,23 @@ public class RequestParamsDTO {
 		this.camposParaAgrupamento = camposParaAgrupamento;
 	}
 	
-	public RequestParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String[] camposParaOrdenacao) {
+	public DatabaseParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String[] camposParaOrdenacao) {
 		this(camposParaSelecionar,tabela,joins, restricoes,null,camposParaOrdenacao,null,null,null);
 	}
 
-	public RequestParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro, String[] camposParaOrdenacao) {
+	public DatabaseParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro, String[] camposParaOrdenacao) {
 		this(camposParaSelecionar,tabela,joins, restricoes,idRegistro,camposParaOrdenacao,null,null,null);
 	}
 
-	public RequestParamsDTO(String tabela, LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores,LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro) {
+	public DatabaseParamsDTO(String tabela, LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores,LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro) {
 		this(null,tabela,null, restricoes,idRegistro,null,camposMaisSeusNovosValores,null,null);
 	}
 	
-	public RequestParamsDTO(String tabela, LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores) {
+	public DatabaseParamsDTO(String tabela, LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores) {
 		this(null,tabela,null, null,null,null,camposMaisSeusNovosValores,null,null);
 	}
 
-	public RequestParamsDTO(LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento) {
+	public DatabaseParamsDTO(LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento) {
 		this(null,tabela,joins, restricoes,null,null,null,funcoesAgregacao,camposParaAgrupamento);
 	}
 }

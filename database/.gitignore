@@ -1,0 +1,7 @@
+/target/
+/logs
+.mvn
+.project
+/mvnw
+/mvnw.cmd
+.classpath
