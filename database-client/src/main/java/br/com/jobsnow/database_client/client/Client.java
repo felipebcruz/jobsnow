@@ -95,7 +95,7 @@ public class Client {
 		if (isStatusNotOk) {
 			this._getErrorMessage();
 		}
-		
+		 
 		HttpEntity entity = this.response.getEntity();
 		InputStream content;
 		try {
@@ -358,6 +358,6 @@ public class Client {
 			throw new RuntimeException("", e);
 		}
 		
-		throw new RuntimeException("Falha ao fazer a requisição, HTTP error code: " + this.response.getStatusLine().getStatusCode() + ", motivo do erro: "+retorno.get("message"));
+		throw new RuntimeException("Falha ao fazer a requisiï¿½ï¿½o, HTTP error code: " + this.response.getStatusLine().getStatusCode() + ", motivo do erro: "+retorno.get("message"));
 	}
 }

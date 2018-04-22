@@ -190,7 +190,7 @@ public class ImplServiceDatabaseIntegrationTest {
 		camposEsperados.add("local");
 		camposEsperados.add("data");
 		
-		Set<String> camposTabela = this.srvDatabase._getCamposTabela(tabela);
+		Set<String> camposTabela = this.srvDatabase._getCamposTabela(tabela, "information_schema.columns");
 		
 		assertEquals(camposEsperados, camposTabela);
 	}

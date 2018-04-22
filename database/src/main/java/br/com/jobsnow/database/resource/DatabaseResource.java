@@ -1,11 +1,10 @@
 package br.com.jobsnow.database.resource;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,11 +18,14 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.jobsnow.database.params.DatabaseParamsDTO;
@@ -40,20 +42,26 @@ public class DatabaseResource {
 	@Autowired
 	private ServiceDatabase srvDatabase;
 
+//	@GetMapping()
+	public String teste(@RequestHeader("params") String parametros) {
+		return parametros;
+	}
+	
+	
 	@ApiOperation(value = "Retorna os registros selecionados conforme especificados no campo quaisCamposTrazer")
-	@GetMapping()
-	public ResponseEntity<List<Map<String, String>>> _selecioneVariosRegistros(HttpServletRequest request) throws Exception {
-		DatabaseParamsDTO params = this._getDatabaseParams(request);
+	@GetMapping
+	public ResponseEntity<List<Map<String, String>>> _selecioneVariosRegistros(@RequestHeader("params") String parametros) throws Exception {
+		DatabaseParamsDTO params = this.convertToDto(parametros);
 		logger.info("/api/v1/database/registros - GET > params = " + params);
 		List<Map<String, String>> registros = this.srvDatabase._selecioneVariosRegistros(params);
 
 		return ResponseEntity.ok(registros);
 	}
 
-	@ApiOperation(value = "Retorna os registros selecionados conforme especificados no campo quaisCamposTrazer baseados no código passado na url")
+	@ApiOperation(value = "Retorna os registros selecionados conforme especificados no campo quaisCamposTrazer baseados no cï¿½digo passado na url")
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Map<String, String>> _selecioneUmUnicoRegistro(@PathVariable("id") Long idRegistro, HttpServletRequest request) throws Exception {
-		DatabaseParamsDTO paramsRequest = this._getDatabaseParams(request);
+	public ResponseEntity<Map<String, String>> _selecioneUmUnicoRegistro(@PathVariable("id") Long idRegistro, @RequestHeader("params") String parametros) throws Exception {
+		DatabaseParamsDTO paramsRequest = this.convertToDto(parametros);
 		DatabaseParamsDTO params = new DatabaseParamsDTO(paramsRequest.camposParaSelecionar,paramsRequest.tabela,
 				paramsRequest.joins,paramsRequest.restricoes,idRegistro,paramsRequest.camposParaOrdenacao);
 		
@@ -64,8 +72,8 @@ public class DatabaseResource {
 
 	@ApiOperation(value = "Retorna o total conforme o sql descrito no atributo porQuaisCamposAgrupar")
 	@GetMapping(value = "/totais")
-	public ResponseEntity<Map<String, String>> _obterTotais(HttpServletRequest request) throws Exception {
-		DatabaseParamsDTO params = this._getDatabaseParams(request);
+	public ResponseEntity<Map<String, String>> _obterTotais(@RequestHeader("params") String parametros) throws Exception {
+		DatabaseParamsDTO params = this.convertToDto(parametros);
 		logger.info("/api/v1/database/registros/totais - GET > params = " + params);
 		Map<String, String> total = this.srvDatabase._obterTotais(params);
 
@@ -74,8 +82,8 @@ public class DatabaseResource {
 
 	@ApiOperation(value = "Retorna status 200 caso tenha algum registro, e retorna status 204 caso nao tenha nenhum registro conforme sql descrito no atributo")
 	@RequestMapping(method = RequestMethod.HEAD)
-	public ResponseEntity<Void> _verificarExistenciaDeRegistrosDadasEstasRestricoes(HttpServletRequest request) throws Exception {
-		DatabaseParamsDTO params = this._getDatabaseParams(request);
+	public ResponseEntity<Void> _verificarExistenciaDeRegistrosDadasEstasRestricoes(@RequestHeader("params") String parametros) throws Exception {
+		DatabaseParamsDTO params = this.convertToDto(parametros);
 		logger.info("/api/v1/database/registros - HEAD > params = " + params);
 
 		boolean existeRegistros = srvDatabase._verificarExistenciaDeRegistrosDadasEstasRestricoes(params);
@@ -126,21 +134,17 @@ public class DatabaseResource {
 	@GetMapping(value = "/campos/{tabela}")
 	public ResponseEntity<Set<String>> _getCamposTabela(@PathVariable("tabela") String tabela) throws Exception{
 		logger.info("/api/v1/database/registros/campos/tabela - GET > tabela = " + tabela);
-		Set<String> campos = this.srvDatabase._getCamposTabela(tabela);
+		String tblComNomesDosCampos = "information_schema.columns"; 
+		Set<String> campos = this.srvDatabase._getCamposTabela(tabela, tblComNomesDosCampos);
 		
 		return ResponseEntity.ok(campos);
 	}
 	
-	private DatabaseParamsDTO _getDatabaseParams(HttpServletRequest request)	throws Exception {
-		String headerParams = request.getHeader("params");
-		boolean headerParamsInvalido = headerParams == null;
 
-		if (headerParamsInvalido) {
-			logger.info("/api/v1/database/registros/{id} - GET > params = " + headerParams);
-			throw new IllegalArgumentException("O header params deve ser preenchido.");
-		}
-
-		DatabaseParamsDTO params = new ObjectMapper().readValue(headerParams, DatabaseParamsDTO.class);
+	private DatabaseParamsDTO convertToDto(String headerParams)
+			throws IOException, JsonParseException, JsonMappingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		DatabaseParamsDTO params = objectMapper.readValue(headerParams, DatabaseParamsDTO.class);
 		return params;
 	}
 }

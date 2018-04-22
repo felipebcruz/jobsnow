@@ -78,14 +78,14 @@ public class ImplServiceDatabaseTest {
 	@Test
 	public void _quandoIdDesteRegistroEstiverNullSelecioneUmUnicoRegistro() throws Exception {
 		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("O id do registro não pode ser null");
+		this.expectedEx.expectMessage("O id do registro nï¿½o pode ser null");
 		this.srvDatabase._selecioneUmUnicoRegistro(new DatabaseParamsDTO());
 	}
 	
 	@Test
 	public void _quandoOsCamposDoUpdateEstiveremNull() throws Exception {
 		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("Os campos do update devem não podem estar null");
+		this.expectedEx.expectMessage("Os campos do update devem nï¿½o podem estar null");
 		this.srvDatabase._atualizarUmUnicoRegistro(new DatabaseParamsDTO("teste",null));
 	}
 	
@@ -107,7 +107,7 @@ public class ImplServiceDatabaseTest {
 	@Test
 	public void _quandoCamposDoInsertEstiveremNull() throws Exception {
 		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("O mapa com os valores a serem inseridos não podem estar null");
+		this.expectedEx.expectMessage("O mapa com os valores a serem inseridos nï¿½o podem estar null");
 		this.srvDatabase._inserirUmUnicoRegistro(new DatabaseParamsDTO("teste", null));
 	}
 	
@@ -136,7 +136,7 @@ public class ImplServiceDatabaseTest {
 	public void _quandoTabelaEstiverNullEmGetCamposTabela() {
 		this.expectedEx.expect(RuntimeException.class);
 		this.expectedEx.expectMessage("Para consultar os campos existentes da tabela a tabela precisa estar preenchida.");
-		this.srvDatabase._getCamposTabela(null);
+		this.srvDatabase._getCamposTabela(null, "information_schema.columns");
 	}
 	
 	@Test
@@ -370,7 +370,7 @@ public class ImplServiceDatabaseTest {
 		
 		when(this.jdbcTemplate.queryForList(sql.toString(), String.class)).thenReturn(new ArrayList<>(camposEsperados));
 		
-		Set<String> camposTabela = this.srvDatabase._getCamposTabela(tabela);
+		Set<String> camposTabela = this.srvDatabase._getCamposTabela(tabela, "information_schema.columns");
 		
 		assertEquals(camposEsperados, camposTabela);
 		verify(this.jdbcTemplate, times(1)).queryForList(sql.toString(), String.class);

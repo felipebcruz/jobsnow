@@ -12,10 +12,11 @@ public class JdbcTemplateConfig {
 
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		return jdbcTemplate;
 	}
 	
-	@Bean
+//	@Bean
 	public DataSource dataSource() {
 		PGSimpleDataSource source = new PGSimpleDataSource();
 		source.setServerName("localhost");

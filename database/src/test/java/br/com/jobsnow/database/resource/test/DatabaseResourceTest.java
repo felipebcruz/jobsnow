@@ -105,7 +105,7 @@ public class DatabaseResourceTest {
 	
 	@Test
 	public void _naoPodeInserirUmRegistroSemOsCamposPreenchidos() throws Exception {
-		doThrow(new NullPointerException("O mapa com os valores a serem inseridos não podem estar null"))
+		doThrow(new NullPointerException("O mapa com os valores a serem inseridos nï¿½o podem estar null"))
 			.when(this.srvDatabase)._inserirUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.mockMvc.perform(post(this.url.toString())
@@ -113,7 +113,7 @@ public class DatabaseResourceTest {
 				.contentType(this.contentType)
 				.content(new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message", is("O mapa com os valores a serem inseridos não podem estar null")));
+				.andExpect(jsonPath("$.message", is("O mapa com os valores a serem inseridos nï¿½o podem estar null")));
 		
 		verify(this.srvDatabase, times(1))._inserirUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase); 
@@ -154,7 +154,7 @@ public class DatabaseResourceTest {
 	public void _naoPodeAtualizarUmUnicoRegistroSemCamposPreenchido() throws Exception {
 		this.url.append("/{id}");
 		
-		doThrow(new IllegalArgumentException("Os campos do update devem não podem estar null"))
+		doThrow(new IllegalArgumentException("Os campos do update devem nï¿½o podem estar null"))
 			.when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.mockMvc.perform(patch(this.url.toString(),1L)
@@ -162,7 +162,7 @@ public class DatabaseResourceTest {
 				.contentType(this.contentType)
 				.content(new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message", is("Os campos do update devem não podem estar null")));
+				.andExpect(jsonPath("$.message", is("Os campos do update devem nï¿½o podem estar null")));
 		
 		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase); 
@@ -172,7 +172,7 @@ public class DatabaseResourceTest {
 	public void _naoPodeAlterarStatusUmUnicoRegistroSemCamposPreenchido() throws Exception {
 		this.url.append("/{id}");
 		
-		doThrow(new IllegalArgumentException("Os campos do update devem não podem estar null"))
+		doThrow(new IllegalArgumentException("Os campos do update devem nï¿½o podem estar null"))
 			.when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.mockMvc.perform(delete(this.url.toString(),1L)
@@ -180,7 +180,7 @@ public class DatabaseResourceTest {
 				.contentType(this.contentType)
 				.content(new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message", is("Os campos do update devem não podem estar null")));
+				.andExpect(jsonPath("$.message", is("Os campos do update devem nï¿½o podem estar null")));
 		
 		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase); 
