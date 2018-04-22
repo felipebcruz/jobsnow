@@ -35,7 +35,7 @@ public class DatabaseInterface {
 		this.client = new Client();
 		
 		try {
-			this.camposTabela = this.getCampos();
+			this.camposTabela = this._getCampos();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException("", e);
@@ -62,7 +62,7 @@ public class DatabaseInterface {
 	}
 	
 	public List<Map<String, String>> _selecioneVariosRegistros(String[] camposParaSelecionar, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaOrdenacao) {
-		_verificaCamposObrigatorios(camposParaSelecionar);
+		this._verificaCamposObrigatorios(camposParaSelecionar);
 		
 		String url = this.urlDatabase.toString();
 		RequestParamsDTO params = new RequestParamsDTO(camposParaSelecionar,this.tabela, joins, restricoes, camposParaOrdenacao);
@@ -106,7 +106,7 @@ public class DatabaseInterface {
 			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
 		}
 
-		_verificaCamposObrigatorios(camposParaSelecionar);
+		this._verificaCamposObrigatorios(camposParaSelecionar);
 
 		String url = this.urlDatabase.append("/").append(this.idRegistro).toString();
 		RequestParamsDTO params = new RequestParamsDTO(camposParaSelecionar,this.tabela, joins, restricoes, this.idRegistro,null);
@@ -150,7 +150,7 @@ public class DatabaseInterface {
 			throw new RuntimeException("Para executar esta tarefa é necessário preencher a tabela.");
 		} 
 		
-		_verificaSeAgregacaoEstaPreenchida(funcoes);
+		this._verificaSeAgregacaoEstaPreenchida(funcoes);
 		
 		String url = this.urlDatabase.append("/totais").toString();
 		RequestParamsDTO params = new RequestParamsDTO(funcoes, this.tabela, joins, restricoes, camposParaAgrupamento);
@@ -202,7 +202,7 @@ public class DatabaseInterface {
 			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
 		}
 		
-		_verificaCamposObrigatorios(camposMaisSeusNovosValores);
+		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
 		
 		String url = this.urlDatabase.append("/").append(this.idRegistro).toString();
 		RequestParamsDTO params = new RequestParamsDTO(this.tabela, camposMaisSeusNovosValores, restricoes, this.idRegistro);
@@ -217,7 +217,7 @@ public class DatabaseInterface {
 			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
 		}
 
-		_verificaCamposObrigatorios(camposMaisSeusNovosValores);
+		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
 		
 		String url = this.urlDatabase.append("/").append(this.idRegistro).toString();
 		RequestParamsDTO params = new RequestParamsDTO(this.tabela, camposMaisSeusNovosValores, restricoes, this.idRegistro);
@@ -226,7 +226,7 @@ public class DatabaseInterface {
 	}
 
 	public Long _inserirUmUnicoRegistro(LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores) throws Exception{
-		_verificaCamposObrigatorios(camposMaisSeusNovosValores);
+		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
 		
 		String url = this.urlDatabase.toString();
 		RequestParamsDTO params = new RequestParamsDTO(this.tabela, camposMaisSeusNovosValores);
@@ -281,7 +281,7 @@ public class DatabaseInterface {
 		}
 	}
 	
-	private Set<String> getCampos() {
+	private Set<String> _getCampos() {
 		if (this.tabela == null) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException("");
