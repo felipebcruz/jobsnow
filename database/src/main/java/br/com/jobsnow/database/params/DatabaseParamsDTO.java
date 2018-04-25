@@ -54,8 +54,8 @@ public class DatabaseParamsDTO {
 		this(camposParaSelecionar,tabela,joins, restricoes,null,camposParaOrdenacao,null,null,null);
 	}
 
-	public DatabaseParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro, String[] camposParaOrdenacao) {
-		this(camposParaSelecionar,tabela,joins, restricoes,idRegistro,camposParaOrdenacao,null,null,null);
+	public DatabaseParamsDTO(String[] camposParaSelecionar, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro) {
+		this(camposParaSelecionar,tabela,joins, restricoes,idRegistro,null,null,null,null);
 	}
 
 	public DatabaseParamsDTO(String tabela, LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores,LinkedHashSet<EspecificacaoCampo> restricoes, Long idRegistro) {
@@ -66,8 +66,8 @@ public class DatabaseParamsDTO {
 		this(null,tabela,null, null,null,null,camposMaisSeusNovosValores,null,null);
 	}
 
-	public DatabaseParamsDTO(LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento) {
-		this(null,tabela,joins, restricoes,null,null,null,funcoesAgregacao,camposParaAgrupamento);
+	public DatabaseParamsDTO(String[] camposParaSelecionar,LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes,String[] camposParaOrdenacao, String... camposParaAgrupamento) {
+		this(camposParaSelecionar,tabela,joins, restricoes,null,camposParaOrdenacao,null,funcoesAgregacao,camposParaAgrupamento);
 	}
 	
 	public boolean possuiOrdenacao() {
@@ -80,17 +80,20 @@ public class DatabaseParamsDTO {
 		return true;
 	}
 	
-	
 	public void assegurarQueCamposDeOrdenacaoNaoEstejamPresentes() {
 		boolean possuiOrdenacao = this.possuiOrdenacao();
 		if(possuiOrdenacao) {
-			throw new CamposDeOrdenacaoNaoDeveriamExistir(this);
+			throw new CamposDeOrdenacaoNaoDeveriamExistirException(this);
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class CamposDeOrdenacaoNaoDeveriamExistir extends RuntimeException{
-		private CamposDeOrdenacaoNaoDeveriamExistir(DatabaseParamsDTO dto) {
+	public static class CamposDeOrdenacaoNaoDeveriamExistirException extends RuntimeException{
+		public CamposDeOrdenacaoNaoDeveriamExistirException(String error) {
+			super(error);
+		}
+		
+		private CamposDeOrdenacaoNaoDeveriamExistirException(DatabaseParamsDTO dto) {
 			super(getErrorMessage(dto));
 		}
 
@@ -102,14 +105,17 @@ public class DatabaseParamsDTO {
 
 	public void assegurarQueIdDaEntidadeEstaPresente() {
 		if(this.idRegistro == null) {
-			throw new IDDestaEntidadeDeveriaEstarPresente(this);
+			throw new IDDestaEntidadeDeveriaEstarPresenteException(this);
 		}
-		
 	}
 	
 	@SuppressWarnings("serial")
-	public static class IDDestaEntidadeDeveriaEstarPresente extends RuntimeException{
-		private IDDestaEntidadeDeveriaEstarPresente(DatabaseParamsDTO dto) {
+	public static class IDDestaEntidadeDeveriaEstarPresenteException extends RuntimeException{
+		public IDDestaEntidadeDeveriaEstarPresenteException(String error) {
+			super(error);
+		}
+		
+		private IDDestaEntidadeDeveriaEstarPresenteException(DatabaseParamsDTO dto) {
 			super(getErrorMessage(dto));
 		}
 
@@ -119,22 +125,24 @@ public class DatabaseParamsDTO {
 		}
 	}
 	
-	
 	public void assegurarQueEstaEntidadePossuiTabela() {
 		if(this.tabela == null ) {
-			throw new EntidadeSemTabela(this);
+			throw new EntidadeSemTabelaException(this);
 		}
 
 		boolean empty = this.tabela.trim().isEmpty();
 		if(empty ) {
-			throw new EntidadeSemTabela(this);
+			throw new EntidadeSemTabelaException(this);
 		}
 	}
 	
-	
 	@SuppressWarnings("serial")
-	public static class EntidadeSemTabela extends RuntimeException{
-		private EntidadeSemTabela(DatabaseParamsDTO dto) {
+	public static class EntidadeSemTabelaException extends RuntimeException{
+		public EntidadeSemTabelaException(String error) {
+			super(error);
+		}
+		
+		private EntidadeSemTabelaException(DatabaseParamsDTO dto) {
 			super(getErrorMessage(dto));
 		}
 
@@ -145,7 +153,6 @@ public class DatabaseParamsDTO {
 	}
 
 	public boolean possuiAgrupamento() {
-		
 		if(this.camposParaAgrupamento == null) {
 			return false;
 		}
@@ -158,20 +165,23 @@ public class DatabaseParamsDTO {
 	}
 
 	public void assegurarQueEstaEntidadePossuiTantoCamposQuantoValores() {
-
 		if(this.camposMaisSeusNovosValores == null) {
-			throw new AusenciaDeCamposMaisValores(this);
+			throw new AusenciaDeCamposMaisValoresException(this);
 		} 
 		
 		boolean empty = this.camposMaisSeusNovosValores.isEmpty();
 		if(empty) {
-			throw new AusenciaDeCamposMaisValores(this);
+			throw new AusenciaDeCamposMaisValoresException(this);
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class AusenciaDeCamposMaisValores extends RuntimeException{
-		private AusenciaDeCamposMaisValores(DatabaseParamsDTO dto) {
+	public static class AusenciaDeCamposMaisValoresException extends RuntimeException{
+		public AusenciaDeCamposMaisValoresException(String error) {
+			super(error);
+		}
+		
+		private AusenciaDeCamposMaisValoresException(DatabaseParamsDTO dto) {
 			super(getErrorMessage(dto));
 		}
 
@@ -181,14 +191,12 @@ public class DatabaseParamsDTO {
 		}
 	}
 	
-	
 	public String _montaAgregacoes() {
 		boolean temCamposParaSelecionar = camposParaSelecionar != null && camposParaSelecionar.length > 0;
 		boolean naoTemAgregacoes = this.funcoesAgregacao == null || this.funcoesAgregacao.isEmpty();
 		
 		if (naoTemAgregacoes) {
-			// TODO
-			throw new RuntimeException("");
+			throw new AusenciaDeCamposDeAgregacaoException(this);
 		}
 		
 		String camposAgregacao = StringUtils.collectionToDelimitedString(this.funcoesAgregacao.stream().map(a -> a.nomeDaFuncao + "(" + a.nomeDoCampo + ")").collect(Collectors.toList()), ",");
@@ -202,10 +210,23 @@ public class DatabaseParamsDTO {
 		return sql.toString();
 	}
 	
+	@SuppressWarnings("serial")
+	public static class AusenciaDeCamposDeAgregacaoException extends RuntimeException{
+		public AusenciaDeCamposDeAgregacaoException(String error) {
+			super(error);
+		}
+		
+		private AusenciaDeCamposDeAgregacaoException(DatabaseParamsDTO dto) {
+			super(getErrorMessage(dto));
+		}
+
+		private static String getErrorMessage(DatabaseParamsDTO dto) {
+			String format = String.format("Os parametros '%s' deveriam possuir funcoes de agregacao", dto);
+			return format;
+		}
+	}
 	
 	public String _fazerSelect() {
-		
-		
 		String camposSelect = StringUtils.arrayToCommaDelimitedString(this.camposParaSelecionar);
 		String camposOrdenacao = StringUtils.arrayToCommaDelimitedString(this.camposParaOrdenacao);
 		StringBuilder sql = new StringBuilder("select ");
@@ -261,9 +282,7 @@ public class DatabaseParamsDTO {
 	}
 	
 	public String _fazerSelectPeloId() {
-
 		this.assegurarQueCamposDeOrdenacaoNaoEstejamPresentes();
-		
 		this.assegurarQueIdDaEntidadeEstaPresente();
 
 		String _fazerSelect = this._fazerSelect();
@@ -292,7 +311,7 @@ public class DatabaseParamsDTO {
 		
 		if (possuiAgrupamento) {
 			String camposAgrupamento = StringUtils.arrayToCommaDelimitedString(this.camposParaAgrupamento);
-			sql.append("group by ").append(camposAgrupamento);
+			sql.append("group by ").append(camposAgrupamento).append(" \n");
 		}
 		
 		boolean possuiOrdenacao = this.possuiOrdenacao();
@@ -304,7 +323,6 @@ public class DatabaseParamsDTO {
 	}
 	
 	public String _fazerSelectDeVerificacaoDeExistenciaDeRegistro() {
-
 		StringBuilder sql = new StringBuilder("select 1 from ").append(this.tabela).append(" \n");
 		
 		String _montaJoins = this._montaJoins();
@@ -317,9 +335,7 @@ public class DatabaseParamsDTO {
 	}
 	
 	public String _montarSqlDoUpdate() {
-
 		this.assegurarQueEstaEntidadePossuiTantoCamposQuantoValores();
-		
 		this.assegurarQueIdDaEntidadeEstaPresente();
 		
 		String tabela = this.tabela;
@@ -337,7 +353,6 @@ public class DatabaseParamsDTO {
 	}
 	
 	public String _montarSqlDoInsert() {
-		
 		this.assegurarQueEstaEntidadePossuiTantoCamposQuantoValores();
 		
 		String tabela = this.tabela;
@@ -352,13 +367,10 @@ public class DatabaseParamsDTO {
 	}
 	
 	public Map<String, Object> _getValoresInsert(){
-
 		Map<String, Object> valores = new HashMap<>();
 
 		this.camposMaisSeusNovosValores.forEach(c -> valores.put(c.nomeDoCampo, c._converteParaTipoCorreto()));
 		
 		return valores;
 	}
-
-
 }

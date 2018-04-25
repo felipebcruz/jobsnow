@@ -76,6 +76,7 @@ public class EspecificacaoCampo {
 		classes.put("date", Date.class);
 		classes.put("long", Long.class);
 		classes.put("double", Double.class);
+		classes.put("string", String.class);
 		
 		return classes.get(this.tipoDoCampo.toLowerCase());
 	}

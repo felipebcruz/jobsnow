@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.jobsnow.database.params.DatabaseParamsDTO;
+import br.com.jobsnow.database.params.DatabaseParamsDTO.EntidadeSemTabelaException;
 import br.com.jobsnow.database.service.ServiceDatabase;
 
 @Service
@@ -112,7 +113,17 @@ public class ImplServiceDatabase implements ServiceDatabase {
 	
 	@Override
 	public Set<String> _getCamposTabela(String tabela, String tblComNomesDosCampos) {
+		String error = "Para fazer o select dos campos a tabela deve estar preenchida";
 
+		if(tabela == null) {
+			throw new EntidadeSemTabelaException(error);
+		}
+		
+		boolean empty = tabela.trim().isEmpty();
+		if(empty) {
+			throw new EntidadeSemTabelaException(error);
+		}
+		
 		StringBuilder sql = new StringBuilder("select column_name from ").append(tblComNomesDosCampos);
 		sql.append(" where table_name='").append(tabela).append("'");
 		
@@ -161,19 +172,3 @@ public class ImplServiceDatabase implements ServiceDatabase {
 		params.assegurarQueEstaEntidadePossuiTabela();
 	}
 }
-
-
-//private String _getColunaPkFrom(String tabela) {
-//
-//	StringBuilder sql = new StringBuilder("select kcu.COLUMN_NAME as coluna_pk ")
-//			.append(" from INFORMATION_SCHEMA.TABLE_CONSTRAINTS as tc ")
-//			.append(" join INFORMATION_SCHEMA.KEY_COLUMN_USAGE as kcu ")
-//			.append(" on kcu.CONSTRAINT_SCHEMA = tc.CONSTRAINT_SCHEMA ")
-//			.append(" and kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME ")
-//			.append(" and kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA ")
-//			.append(" and kcu.TABLE_NAME = tc.TABLE_NAME ")
-//			.append(" where tc.CONSTRAINT_TYPE = 'PRIMARY KEY' ")
-//			.append(" and tc.TABLE_NAME = '").append(tabela).append("'");
-//	
-//	return this.jdbcTemplate.queryForObject(sql.toString(), String.class);
-//}

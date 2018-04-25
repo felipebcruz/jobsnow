@@ -42,12 +42,6 @@ public class DatabaseResource {
 	@Autowired
 	private ServiceDatabase srvDatabase;
 
-//	@GetMapping()
-	public String teste(@RequestHeader("params") String parametros) {
-		return parametros;
-	}
-	
-	
 	@ApiOperation(value = "Retorna os registros selecionados conforme especificados no campo quaisCamposTrazer")
 	@GetMapping
 	public ResponseEntity<List<Map<String, String>>> _selecioneVariosRegistros(@RequestHeader("params") String parametros) throws Exception {
@@ -63,7 +57,7 @@ public class DatabaseResource {
 	public ResponseEntity<Map<String, String>> _selecioneUmUnicoRegistro(@PathVariable("id") Long idRegistro, @RequestHeader("params") String parametros) throws Exception {
 		DatabaseParamsDTO paramsRequest = this.convertToDto(parametros);
 		DatabaseParamsDTO params = new DatabaseParamsDTO(paramsRequest.camposParaSelecionar,paramsRequest.tabela,
-				paramsRequest.joins,paramsRequest.restricoes,idRegistro,paramsRequest.camposParaOrdenacao);
+				paramsRequest.joins,paramsRequest.restricoes,idRegistro);
 		
 		Map<String, String> registro = this.srvDatabase._selecioneUmUnicoRegistro(params);
 

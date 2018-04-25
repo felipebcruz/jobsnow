@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.jobsnow.database.DatabaseApplication;
 import br.com.jobsnow.database.params.DatabaseParamsDTO;
+import br.com.jobsnow.database.params.DatabaseParamsDTO.EntidadeSemTabelaException;
 import br.com.jobsnow.database.service.ServiceDatabase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -71,11 +72,14 @@ public class DatabaseResourceTest {
 	
 	@Test
 	public void _naoPodeSelecionarVariosRegistrosSemParams() throws Exception {
+		doThrow(new IllegalArgumentException("Os parametros do banco de dados nao foram informados")).when(this.srvDatabase)._selecioneVariosRegistros(Mockito.any(DatabaseParamsDTO.class));
+		
 		this.mockMvc.perform(get(this.url.toString())
 				.accept(this.contentType)
-				.contentType(this.contentType))
+				.contentType(this.contentType)
+				.header("params", new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 		.andExpect(status().isBadRequest())
-		.andExpect(jsonPath("$.message", is("O header params deve ser preenchido.")));
+		.andExpect(jsonPath("$.message", is("Os parametros do banco de dados nao foram informados")));
 	}
 	
 	@Test
@@ -95,12 +99,15 @@ public class DatabaseResourceTest {
 	
 	@Test
 	public void _naoPodeSelecionarUmUnicoRegistroSemParamsPreenchido() throws Exception {
+		doThrow(new EntidadeSemTabelaException("Os parametros '%s' deveriam possuir uma tabela")).when(this.srvDatabase)._selecioneUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		
 		this.url.append("/{id}");
 		this.mockMvc.perform(get(this.url.toString(),1L)
 				.accept(this.contentType)
-				.contentType(this.contentType))
+				.contentType(this.contentType)
+				.header("params", new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message", is("O header params deve ser preenchido.")));
+				.andExpect(jsonPath("$.message", is("Os parametros '%s' deveriam possuir uma tabela")));
 	}
 	
 	@Test
