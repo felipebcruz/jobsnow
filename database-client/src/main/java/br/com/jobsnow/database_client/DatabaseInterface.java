@@ -143,6 +143,21 @@ public class DatabaseInterface {
 		return retorno;
 	}
 	
+	public Map<String, Integer> _obterTotais(Map<String, String> restricoes){
+		LinkedHashSet<FuncaoAgregacao> funcoes = new LinkedHashSet<>();
+		FuncaoAgregacao funcao = new FuncaoAgregacao("count", "*");
+		funcoes.add(funcao);
+		LinkedHashSet<Join> joins = new LinkedHashSet<>();
+		LinkedHashSet<EspecificacaoCampo> restr = new LinkedHashSet<>();
+		Set<String> keySet = restricoes.keySet();
+		for (String chave : keySet) {
+			String valor  = restricoes.get(chave);
+
+		}
+		Map<String, Integer> _obterTotais = this._obterTotais(funcoes, joins, restr);
+		return _obterTotais;
+	}
+	
 	public Map<String, Integer> _obterTotais(LinkedHashSet<FuncaoAgregacao> funcoes, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento){
 		boolean isTabelaValida = this.tabela != null && this.tabela.length() > 0;
 
