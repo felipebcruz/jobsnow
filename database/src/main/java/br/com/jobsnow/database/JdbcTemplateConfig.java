@@ -16,7 +16,7 @@ public class JdbcTemplateConfig {
 		return jdbcTemplate;
 	}
 	
-//	@Bean
+	@Bean
 	public DataSource dataSource() {
 		PGSimpleDataSource source = new PGSimpleDataSource();
 		source.setServerName("localhost");

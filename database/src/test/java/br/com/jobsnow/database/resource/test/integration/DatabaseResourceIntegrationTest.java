@@ -59,14 +59,15 @@ public class DatabaseResourceIntegrationTest {
 	
 	@Test
 	public void _deveSelecionarVariosRegistros() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposParaOrdenacao = null;
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		LinkedHashSet<Join> joins = null;
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 
-		restricoes.add(new EspecificacaoCampo("id_entrevista", "2", "Integer"));
+		restricoes.add(new EspecificacaoCampo("id", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,camposParaOrdenacao);
 		
 		this.mockMvc.perform(get(this.url.toString())
 				.accept(this.contentType)
@@ -74,7 +75,7 @@ public class DatabaseResourceIntegrationTest {
 				.header("params", new ObjectMapper().writeValueAsString(params)))
 				.andExpect(status().isOk())
 	            .andExpect(jsonPath("$", hasSize(1)))
-	            .andExpect(jsonPath("$[0].id_entrevista", is("2")))
+	            .andExpect(jsonPath("$[0].id", is("2")))
 	            .andExpect(jsonPath("$[0].status", is("2")))
 	            .andExpect(jsonPath("$[0].remetente", is("0")))
 	            .andExpect(jsonPath("$[0].id_candidato", is("1")))
@@ -84,18 +85,18 @@ public class DatabaseResourceIntegrationTest {
 	@Test
 	public void _deveSelecionarUmRegistro() throws Exception {
 		this.url.append("/{id}");
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		Long idRegistro = 1L;
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		
 		this.mockMvc.perform(get(this.url.toString(),idRegistro)
 				.accept(this.contentType)
 				.contentType(this.contentType)
 				.header("params", new ObjectMapper().writeValueAsString(params)))
 				.andExpect(status().isOk())
-	            .andExpect(jsonPath("$.id_entrevista", is("1")))
+	            .andExpect(jsonPath("$.id", is("1")))
 	            .andExpect(jsonPath("$.status", is("2")))
 	            .andExpect(jsonPath("$.remetente", is("0")))
 	            .andExpect(jsonPath("$.id_candidato", is("1")))
@@ -107,6 +108,7 @@ public class DatabaseResourceIntegrationTest {
 		this.url.append("/totais");
 		
 		String tabela = "entrevista";
+		String[] camposParaSelecionar = null;
 		String[] camposAgrupamento = null;
 		LinkedHashSet<FuncaoAgregacao> funcoesAgregacao = new LinkedHashSet<>();
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
@@ -115,7 +117,7 @@ public class DatabaseResourceIntegrationTest {
 		funcoesAgregacao.add(new FuncaoAgregacao("count", "*"));
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposParaSelecionar,funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
 		
 		this.mockMvc.perform(get(this.url.toString())
 				.accept(this.contentType)
@@ -171,7 +173,7 @@ public class DatabaseResourceIntegrationTest {
 		String tabela = "entrevista";
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		
-		novosValores.add(new EspecificacaoCampo("id_entrevista", "6", "Integer"));
+		novosValores.add(new EspecificacaoCampo("id", "6", "Integer"));
 		novosValores.add(new EspecificacaoCampo("status", "11", "Integer"));
 		novosValores.add(new EspecificacaoCampo("remetente", "3", "Integer"));
 		novosValores.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
@@ -189,13 +191,14 @@ public class DatabaseResourceIntegrationTest {
 
 	@Test
 	public void _deveVerificarExistenciaDeRegistrosDadasEstasRestricoes() throws Exception{
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposParaOrdenacao = null;
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,camposParaOrdenacao);
 				
 		this.mockMvc.perform(head(this.url.toString())
 				.accept(this.contentType)

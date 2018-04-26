@@ -34,6 +34,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import br.com.jobsnow.database.DatabaseApplication;
 import br.com.jobsnow.database.params.DatabaseParamsDTO;
+import br.com.jobsnow.database.params.DatabaseParamsDTO.AusenciaDeCamposMaisValoresException;
+import br.com.jobsnow.database.params.DatabaseParamsDTO.EntidadeSemTabelaException;
+import br.com.jobsnow.database.params.DatabaseParamsDTO.IDDestaEntidadeDeveriaEstarPresenteException;
 import br.com.jobsnow.database.params.EspecificacaoCampo;
 import br.com.jobsnow.database.params.FuncaoAgregacao;
 import br.com.jobsnow.database.params.Join;
@@ -64,96 +67,106 @@ public class ImplServiceDatabaseTest {
 	@Test
 	public void _quandoParamsEstiverNullEmMontarOSQL() throws Exception {
 		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("Os parametros devem estar preenchidos.");
+		this.expectedEx.expectMessage("Os parametros do banco de dados nao foram informados");
 		this.srvDatabase._selecioneVariosRegistros(null);
 	}
 
 	@Test
 	public void _quandoTabelaEstiverNullEmMontarSQL() throws Exception {
-		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para consultar os campos existentes da tabela a tabela precisa estar preenchida.");
-		this.srvDatabase._selecioneVariosRegistros(new DatabaseParamsDTO());
+		DatabaseParamsDTO params = new DatabaseParamsDTO();
+		
+		this.expectedEx.expect(EntidadeSemTabelaException.class);
+		this.srvDatabase._selecioneVariosRegistros(params);
 	}
 
 	@Test
 	public void _quandoIdDesteRegistroEstiverNullSelecioneUmUnicoRegistro() throws Exception {
-		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("O id do registro n�o pode ser null");
-		this.srvDatabase._selecioneUmUnicoRegistro(new DatabaseParamsDTO());
+		DatabaseParamsDTO params = new DatabaseParamsDTO("teste", new LinkedHashSet<>());
+		
+		this.expectedEx.expect(IDDestaEntidadeDeveriaEstarPresenteException.class);
+		this.srvDatabase._selecioneUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoOsCamposDoUpdateEstiveremNull() throws Exception {
-		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("Os campos do update devem n�o podem estar null");
-		this.srvDatabase._atualizarUmUnicoRegistro(new DatabaseParamsDTO("teste",null));
+		DatabaseParamsDTO params = new DatabaseParamsDTO("teste",null);
+		
+		this.expectedEx.expect(AusenciaDeCamposMaisValoresException.class);
+		this.srvDatabase._atualizarUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoIdRegistroEstiverNullNoUpdate() throws Exception {
 		String tabela = "entrevista";
-		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("O id do registro a ser atualizado deve ser especificado.");
-		this.srvDatabase._atualizarUmUnicoRegistro(new DatabaseParamsDTO(tabela,new LinkedHashSet<>(),null,null));
+		LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores = new LinkedHashSet<>();
+		camposMaisSeusNovosValores.add(new EspecificacaoCampo());
+		
+		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela,camposMaisSeusNovosValores,null,null);
+		
+		this.expectedEx.expect(IDDestaEntidadeDeveriaEstarPresenteException.class);
+		this.srvDatabase._atualizarUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoTabelaEstiverNullEmAtualizarUmRegistro() throws Exception {
-		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para consultar os campos existentes da tabela a tabela precisa estar preenchida.");
-		this.srvDatabase._atualizarUmUnicoRegistro(new DatabaseParamsDTO(null,null,null,null));
+		DatabaseParamsDTO params = new DatabaseParamsDTO(null,null,null,null);
+		
+		this.expectedEx.expect(EntidadeSemTabelaException.class);
+		this.srvDatabase._atualizarUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoCamposDoInsertEstiveremNull() throws Exception {
-		this.expectedEx.expect(IllegalArgumentException.class);
-		this.expectedEx.expectMessage("O mapa com os valores a serem inseridos n�o podem estar null");
-		this.srvDatabase._inserirUmUnicoRegistro(new DatabaseParamsDTO("teste", null));
+		DatabaseParamsDTO params = new DatabaseParamsDTO("teste", null);
+
+		this.expectedEx.expect(AusenciaDeCamposMaisValoresException.class);
+		this.srvDatabase._inserirUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoParamsEstiverNullEmInserirUmUnicoRegistro() throws Exception {
-		this.expectedEx.expect(NullPointerException.class);
-		this.expectedEx.expectMessage("Para inserir um registro os parametros devem estar preenchidos corretamente.");
+		this.expectedEx.expect(IllegalArgumentException.class);
+		this.expectedEx.expectMessage("Os parametros do banco de dados nao foram informados");
 		this.srvDatabase._inserirUmUnicoRegistro(null);
 	}
 
 	@Test
 	public void _quandoTabelaEstiverNullEmInserirUmUnicoRegistro() throws Exception {
-		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para consultar os campos existentes da tabela a tabela precisa estar preenchida.");
-		this.srvDatabase._inserirUmUnicoRegistro(new DatabaseParamsDTO(null, new LinkedHashSet<>()));
+		DatabaseParamsDTO params = new DatabaseParamsDTO(null, new LinkedHashSet<>());
+		
+		this.expectedEx.expect(EntidadeSemTabelaException.class);
+		this.srvDatabase._inserirUmUnicoRegistro(params);
 	}
 	
 	@Test
 	public void _quandoParamsEstiverNullEmAtualizarUmUnicoRegistro() throws Exception {
-		this.expectedEx.expect(NullPointerException.class);
-		this.expectedEx.expectMessage("Para atualizar um registro os parametros devem estar preenchidos corretamente.");
+		this.expectedEx.expect(IllegalArgumentException.class);
+		this.expectedEx.expectMessage("Os parametros do banco de dados nao foram informados");
 		this.srvDatabase._atualizarUmUnicoRegistro(null);
 	}
 	
 	@Test
 	public void _quandoTabelaEstiverNullEmGetCamposTabela() {
-		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para consultar os campos existentes da tabela a tabela precisa estar preenchida.");
+		this.expectedEx.expect(EntidadeSemTabelaException.class);
 		this.srvDatabase._getCamposTabela(null, "information_schema.columns");
 	}
 	
 	@Test
 	public void _deveSelecionarVariosRegistros() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "email"};
+		String[] camposSelect = {"id", "status", "remetente", "email"};
+		String[] camposParaOrdenacao = null;
 		String tabela = "entrevista";
 		LinkedHashSet<Join> joins = new LinkedHashSet<>();
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 
 		joins.add(new Join("entrevista", "id_candidato", "usuario", "id_usuario"));
-		restricoes.add(new EspecificacaoCampo("id_entrevista", "2", "Integer"));
+		restricoes.add(new EspecificacaoCampo("id", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,camposParaOrdenacao);
 
 		List<Map<String, Object>> retornoEsperado = new ArrayList<>();
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("id_entrevista", "2");
+		ret.put("id", "2");
 		ret.put("status", "2");
 		ret.put("remetente", "0");
 		ret.put("id_candidato", "1");
@@ -171,35 +184,23 @@ public class ImplServiceDatabaseTest {
 	@Test
 	public void _deveSelecionarUmRegistro() throws Exception {
 		String tabela = "entrevista";
-		StringBuilder sql = new StringBuilder("select kcu.COLUMN_NAME as coluna_pk ")
-				.append(" from INFORMATION_SCHEMA.TABLE_CONSTRAINTS as tc ")
-				.append(" join INFORMATION_SCHEMA.KEY_COLUMN_USAGE as kcu ")
-				.append(" on kcu.CONSTRAINT_SCHEMA = tc.CONSTRAINT_SCHEMA ")
-				.append(" and kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME ")
-				.append(" and kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA ")
-				.append(" and kcu.TABLE_NAME = tc.TABLE_NAME ")
-				.append(" where tc.CONSTRAINT_TYPE = 'PRIMARY KEY' ")
-				.append(" and tc.TABLE_NAME = '").append(tabela).append("'");
-		
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		Long idRegistro = 1L;
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 
 		Map<String, Object> esperado = new HashMap<>();
-		esperado.put("id_entrevista", "1");
+		esperado.put("id", "1");
 		esperado.put("status", "2");
 		esperado.put("remetente", "0");
 		esperado.put("id_candidato", "1");
 
 		when(this.jdbcTemplate.queryForMap(Mockito.anyString())).thenReturn(esperado);
-		when(this.jdbcTemplate.queryForObject(sql.toString(), String.class)).thenReturn(null);
 		
 		Map<String, String> retorno = this.srvDatabase._selecioneUmUnicoRegistro(params);
 
 		assertEquals(esperado, retorno);
 		verify(this.jdbcTemplate, times(1)).queryForMap(Mockito.anyString());
-		verify(this.jdbcTemplate, times(1)).queryForObject(sql.toString(), String.class);
 		verifyNoMoreInteractions(this.jdbcTemplate);
 	}
 
@@ -210,16 +211,7 @@ public class ImplServiceDatabaseTest {
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		Long idRegistro = 4L;
 		Map<String, Object> valores = new HashMap<>();
-		StringBuilder sql = new StringBuilder("select kcu.COLUMN_NAME as coluna_pk ")
-				.append(" from INFORMATION_SCHEMA.TABLE_CONSTRAINTS as tc ")
-				.append(" join INFORMATION_SCHEMA.KEY_COLUMN_USAGE as kcu ")
-				.append(" on kcu.CONSTRAINT_SCHEMA = tc.CONSTRAINT_SCHEMA ")
-				.append(" and kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME ")
-				.append(" and kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA ")
-				.append(" and kcu.TABLE_NAME = tc.TABLE_NAME ")
-				.append(" where tc.CONSTRAINT_TYPE = 'PRIMARY KEY' ")
-				.append(" and tc.TABLE_NAME = '").append(tabela).append("'");
-		
+
 		valores.put("status", "9");
 		valores.put("remetente", "7");
 		
@@ -231,16 +223,14 @@ public class ImplServiceDatabaseTest {
 		this.srvDatabase._atualizarUmUnicoRegistro(params);
 
 		when(this.jdbcTemplate.queryForMap(Mockito.anyString())).thenReturn(valores);
-		when(this.jdbcTemplate.queryForObject(sql.toString(), String.class)).thenReturn(null);
 		
-		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 
 		assertEquals(valores, registroAlterado);
 		verify(this.jdbcTemplate, times(1)).update(Mockito.anyString());
 		verify(this.jdbcTemplate, times(1)).queryForMap(Mockito.anyString());
-		verify(this.jdbcTemplate, times(2)).queryForObject(sql.toString(), String.class);
 		verifyNoMoreInteractions(this.jdbcTemplate);
 	}
 
@@ -249,15 +239,6 @@ public class ImplServiceDatabaseTest {
 		Long idRegistro = 5L;
 		String[] camposSelect = {"status"};
 		String tabela = "entrevista";
-		StringBuilder sql = new StringBuilder("select kcu.COLUMN_NAME as coluna_pk ")
-				.append(" from INFORMATION_SCHEMA.TABLE_CONSTRAINTS as tc ")
-				.append(" join INFORMATION_SCHEMA.KEY_COLUMN_USAGE as kcu ")
-				.append(" on kcu.CONSTRAINT_SCHEMA = tc.CONSTRAINT_SCHEMA ")
-				.append(" and kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME ")
-				.append(" and kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA ")
-				.append(" and kcu.TABLE_NAME = tc.TABLE_NAME ")
-				.append(" where tc.CONSTRAINT_TYPE = 'PRIMARY KEY' ")
-				.append(" and tc.TABLE_NAME = '").append(tabela).append("'");
 		
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		novosValores.add(new EspecificacaoCampo("status", "45", "Integer"));
@@ -268,17 +249,15 @@ public class ImplServiceDatabaseTest {
 		esperado.put("status", "45");
 
 		when(this.jdbcTemplate.queryForMap(Mockito.anyString())).thenReturn(esperado);
-		when(this.jdbcTemplate.queryForObject(sql.toString(), String.class)).thenReturn(null);
 
 		this.srvDatabase._atualizarUmUnicoRegistro(params);
 
-		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 
 		assertEquals(esperado, registroAlterado);
 		verify(this.jdbcTemplate, times(1)).update(Mockito.anyString());
 		verify(this.jdbcTemplate, times(1)).queryForMap(Mockito.anyString());
-		verify(this.jdbcTemplate, times(2)).queryForObject(sql.toString(), String.class);
 		verifyNoMoreInteractions(this.jdbcTemplate);
 	}
 
@@ -288,7 +267,7 @@ public class ImplServiceDatabaseTest {
 		String tabela = "entrevista";
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		
-		novosValores.add(new EspecificacaoCampo("id_entrevista", "6", "Integer"));
+		novosValores.add(new EspecificacaoCampo("id", "6", "Integer"));
 		novosValores.add(new EspecificacaoCampo("status", "11", "Integer"));
 		novosValores.add(new EspecificacaoCampo("remetente", "3", "Integer"));
 		novosValores.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
@@ -309,6 +288,7 @@ public class ImplServiceDatabaseTest {
 	@Test
 	public void _deveObterTotal() throws Exception {
 		String tabela = "entrevista";
+		String[] camposParaSelecionar = null;
 		String[] camposAgrupamento = null;
 		LinkedHashSet<FuncaoAgregacao> funcoesAgregacao = new LinkedHashSet<>();
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
@@ -317,7 +297,7 @@ public class ImplServiceDatabaseTest {
 		funcoesAgregacao.add(new FuncaoAgregacao("count", "*"));
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposParaSelecionar,funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
 		
 		Map<String, Object> totalEsperado = new HashMap<>();
 		totalEsperado.put("count", "2");
@@ -333,13 +313,14 @@ public class ImplServiceDatabaseTest {
 
 	@Test
 	public void _deveVerificarExistenciaDeRegistrosDadasEstasRestricoes() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposParaOrdenacao = null;
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,camposParaOrdenacao);
 		List<Map<String, Object>> resultadoEsperado = new ArrayList<>();
 		Map<String, Object> retorno = new HashMap<>();
 		retorno.put("status", "1");
@@ -358,7 +339,7 @@ public class ImplServiceDatabaseTest {
 	public void _deveTrazerTodosOsCamposDaTabela() {
 		String tabela = "entrevista";
 		Set<String> camposEsperados = new HashSet<>();
-		camposEsperados.add("id_entrevista");
+		camposEsperados.add("id");
 		camposEsperados.add("status");
 		camposEsperados.add("remetente");
 		camposEsperados.add("id_candidato");
