@@ -38,21 +38,22 @@ public class ImplServiceDatabaseIntegrationTest {
 	
 	@Test
 	public void _deveSelecionarVariosRegistros() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "email"};
+		String[] camposParaOrdenacao = null;
+		String[] camposSelect = {"id", "status", "remetente", "email"};
 		String tabela = "entrevista";
 		LinkedHashSet<Join> joins = new LinkedHashSet<>();
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 
 		joins.add(new Join("entrevista", "id_candidato", "usuario", "id_usuario"));
-		restricoes.add(new EspecificacaoCampo("id_entrevista", "2", "Integer"));
+		restricoes.add(new EspecificacaoCampo("id", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,joins,restricoes,camposParaOrdenacao);
 		
 		List<Map<String, String>> resultado = this.srvDatabase._selecioneVariosRegistros(params);
 		
 		List<Map<String, String>> retornoEsperado = new ArrayList<>();
 		Map<String, String> ret = new HashMap<>();
-		ret.put("id_entrevista", "2");
+		ret.put("id", "2");
 		ret.put("status", "2");
 		ret.put("remetente", "0");
 		ret.put("email", "teste@teste.com");
@@ -63,15 +64,15 @@ public class ImplServiceDatabaseIntegrationTest {
 	
 	@Test
 	public void _deveSelecionarUmRegistro() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		Long idRegistro = 1L;
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		Map<String,String> retorno = this.srvDatabase._selecioneUmUnicoRegistro(params);
 		
 		Map<String, String> esperado = new HashMap<>();
-		esperado.put("id_entrevista", "1");
+		esperado.put("id", "1");
 		esperado.put("status", "2");
 		esperado.put("remetente", "0");
 		esperado.put("id_candidato", "1");
@@ -92,7 +93,7 @@ public class ImplServiceDatabaseIntegrationTest {
 		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela, novosValores, null, idRegistro);
 		this.srvDatabase._atualizarUmUnicoRegistro(params);
 
-		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 		
@@ -117,7 +118,7 @@ public class ImplServiceDatabaseIntegrationTest {
 		
 		this.srvDatabase._atualizarUmUnicoRegistro(params);
 		
-		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro,null);
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 		Map<String, String> esperado = new HashMap<>();
 		esperado.put("status", "45");
@@ -131,7 +132,7 @@ public class ImplServiceDatabaseIntegrationTest {
 		String tabela = "entrevista";
 		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
 		
-		novosValores.add(new EspecificacaoCampo("id_entrevista", "6", "Integer"));
+		novosValores.add(new EspecificacaoCampo("id", "6", "Integer"));
 		novosValores.add(new EspecificacaoCampo("status", "11", "Integer"));
 		novosValores.add(new EspecificacaoCampo("remetente", "3", "Integer"));
 		novosValores.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
@@ -146,6 +147,7 @@ public class ImplServiceDatabaseIntegrationTest {
 	@Test
 	public void _deveObterTotal() throws Exception {
 		String tabela = "entrevista";
+		String[] camposParaSelecionar = null; 
 		String[] camposAgrupamento = null;
 		LinkedHashSet<FuncaoAgregacao> funcoesAgregacao = new LinkedHashSet<>();
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
@@ -154,7 +156,7 @@ public class ImplServiceDatabaseIntegrationTest {
 		funcoesAgregacao.add(new FuncaoAgregacao("count", "*"));
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposParaSelecionar,funcoesAgregacao,tabela,joins,restricoes,camposAgrupamento);
 
 		Map<String, String> total = this.srvDatabase._obterTotais(params);
 		
@@ -166,13 +168,14 @@ public class ImplServiceDatabaseIntegrationTest {
 	
 	@Test
 	public void _deveVerificarExistenciaDeRegistrosDadasEstasRestricoes() throws Exception {
-		String[] camposSelect = {"id_entrevista", "status", "remetente", "id_candidato"};
+		String[] camposParaOrdenacao = null;
+		String[] camposSelect = {"id", "status", "remetente", "id_candidato"};
 		String tabela = "entrevista";
 		
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
 		restricoes.add(new EspecificacaoCampo("status", "2", "Integer"));
 		
-		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,camposParaOrdenacao);
 		
 		boolean resultado = this.srvDatabase._verificarExistenciaDeRegistrosDadasEstasRestricoes(params);
 		
@@ -183,7 +186,7 @@ public class ImplServiceDatabaseIntegrationTest {
 	public void _deveTrazerTodosOsCamposDaTabela() {
 		String tabela = "entrevista";
 		Set<String> camposEsperados = new HashSet<>();
-		camposEsperados.add("id_entrevista");
+		camposEsperados.add("id");
 		camposEsperados.add("status");
 		camposEsperados.add("remetente");
 		camposEsperados.add("id_candidato");
