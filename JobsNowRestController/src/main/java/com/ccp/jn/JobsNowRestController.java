@@ -163,6 +163,7 @@ public class JobsNowRestController {
 	}
 	
 	
+	
 	@ResponseBody
 	@PostMapping("usuarios/{idDoUsuario}/dicasProfissionais/NaoLidas/{idDaDica}")
 	public void marcacaoDestaDicaComoLidaPorEsteUsusario(@PathVariable("idDoUsuario") Long idDoUsuario, @PathVariable("idDaDica") Long idDaDica) {
@@ -184,6 +185,7 @@ public class JobsNowRestController {
 	
 	@DeleteMapping("usuarios/{idDoUsuario}/")
 	public void inativacaoDestaContaPorEsteUsuario(@PathVariable("idDoUsuario") Long idUsuario) {
+	
 		this.desistirDeTodosOsConvitesDeEntrevistasEnviadosPorEsteEntrevistador(idUsuario);
 		this.desistirDeTodosOsConvitesDeEntrevistasEnviadosPorEsteCandidato(idUsuario);
 		this.recusarTodosOsConvitesDeEntrevistasDesteEntrevistador(idUsuario);
@@ -211,7 +213,11 @@ public class JobsNowRestController {
 	}
 
 	private void recusarTodosOsConvitesDeEntrevistasDesteEntrevistador(Long idUsuario) {
-		// TODO Auto-generated method stub
+		JobsNowRequest request = new JobsNowRequest("usuarios/{idDoUsuario}/entrevistador/entrevistas/cancelamento");
+		Map<String, String> pathVariables = new HashMap<>();
+		pathVariables.put("idDoUsuario", "" + idUsuario);
+		request._head(pathVariables);
+		
 		
 	}
 
