@@ -17,7 +17,7 @@ public class AlteracaoDeDeRegistros {
 	public boolean _umUnicoRegistro(Long idDesteUnicoRegistro) {
 		//TODO
 		return false;
-	}
+	}   
 	
 	
 	public int _deUmConjuntoDeRegistrosQueAtendemDeterminadosCriteriosDeSelecao(Set<EspecificacaoCampo> criteriosParaSelecaoDosRegistros) {
