@@ -31,8 +31,8 @@ import org.junit.rules.ExpectedException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.jobsnow.database_client.client.Client;
-import br.com.jobsnow.database_client.client.HttpDeleteWithBody;
+import br.com.jobsnow.database.client.Client;
+import br.com.jobsnow.database.client.HttpDeleteWithBody;
 
 public class ClientTest {
 	private HttpClient client;
@@ -94,7 +94,7 @@ public class ClientTest {
 	@Test
 	public void _deveMostrarMensagemDeErroQuandoStatusDoGetNaoFor200() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Falha ao fazer a requisição, HTTP error code: " + 400 + ", motivo do erro: ");
+		this.expectedEx.expectMessage("Falha ao fazer a requisiï¿½ï¿½o, HTTP error code: " + 400 + ", motivo do erro: ");
 		when(this.statusLine.getStatusCode()).thenReturn(400);
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.get)).thenReturn(this.response);
@@ -181,7 +181,7 @@ public class ClientTest {
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.patch)).thenReturn(this.response);
         this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Falha ao fazer a requisição, HTTP error code: "+400+ ", motivo do erro: ");
+		this.expectedEx.expectMessage("Falha ao fazer a requisiï¿½ï¿½o, HTTP error code: "+400+ ", motivo do erro: ");
         
 		Map<String, String> teste = new HashMap<String, String>();
         teste.put("message", "");
@@ -218,7 +218,7 @@ public class ClientTest {
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.delete)).thenReturn(this.response);
         this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Falha ao fazer a requisição, HTTP error code: "+400+ ", motivo do erro: ");
+		this.expectedEx.expectMessage("Falha ao fazer a requisiï¿½ï¿½o, HTTP error code: "+400+ ", motivo do erro: ");
 		
 		Map<String, String> teste = new HashMap<String, String>();
         teste.put("message", "");
@@ -257,7 +257,7 @@ public class ClientTest {
 		when(this.response.getStatusLine()).thenReturn(this.statusLine);
         when(this.client.execute(this.post)).thenReturn(this.response);
         this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Falha ao fazer a requisição, HTTP error code: "+400+ ", motivo do erro: ");
+		this.expectedEx.expectMessage("Falha ao fazer a requisiï¿½ï¿½o, HTTP error code: "+400+ ", motivo do erro: ");
 		Map<String, String> teste = new HashMap<String, String>();
         teste.put("message", "");
         

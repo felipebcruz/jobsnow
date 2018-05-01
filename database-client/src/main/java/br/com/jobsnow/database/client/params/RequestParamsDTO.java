@@ -1,6 +1,9 @@
-package br.com.jobsnow.database_client.params;
+package br.com.jobsnow.database.client.params;
 
 import java.util.LinkedHashSet;
+
+import br.com.jobsnow.database.api.EspecificacaoCampo;
+import br.com.jobsnow.database.api.Join;
 
 public class RequestParamsDTO {
 	public final Long idRegistro; 
@@ -8,7 +11,7 @@ public class RequestParamsDTO {
 	public final String[] camposParaSelecionar;
 	public final String[] camposParaOrdenacao;
 	public final String[] camposParaAgrupamento;
-	public final LinkedHashSet<FuncaoAgregacao> funcoesAgregacao;
+	public final LinkedHashSet<Sumarizacao> funcoesAgregacao;
 	public final LinkedHashSet<Join> joins; 
 	public final LinkedHashSet<EspecificacaoCampo> restricoes;
 	public final LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores;
@@ -19,7 +22,7 @@ public class RequestParamsDTO {
 			Long idRegistro,
 			String[] camposParaOrdenacao,
 			LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores,
-			LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, 
+			LinkedHashSet<Sumarizacao> funcoesAgregacao, 
 			String[] camposParaAgrupamento) {
 		
 		this.camposParaSelecionar = camposParaSelecionar;
@@ -49,7 +52,7 @@ public class RequestParamsDTO {
 		this(null,tabela,null, null,null,null,camposMaisSeusNovosValores,null,null);
 	}
 
-	public RequestParamsDTO(LinkedHashSet<FuncaoAgregacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento) {
+	public RequestParamsDTO(LinkedHashSet<Sumarizacao> funcoesAgregacao, String tabela, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento) {
 		this(null,tabela,joins, restricoes,null,null,null,funcoesAgregacao,camposParaAgrupamento);
 	}
 }

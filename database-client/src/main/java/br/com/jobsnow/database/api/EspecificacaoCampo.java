@@ -1,4 +1,4 @@
-package br.com.jobsnow.database_client.params;
+package br.com.jobsnow.database.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +8,11 @@ public class EspecificacaoCampo {
 	public final String valorDoCampo;
 	public final String tipoDoCampo;
 
+	public EspecificacaoCampo(String nomeDoCampo, String valorDoCampo) {
+		this(nomeDoCampo, valorDoCampo, "TEXTO");
+	}
+	
+	
 	public EspecificacaoCampo(String nomeDoCampo, String valorDoCampo, String tipoDoCampo) {
 		this.nomeDoCampo = nomeDoCampo;
 		this.valorDoCampo = valorDoCampo;

@@ -1,4 +1,4 @@
-package br.com.jobsnow.database_client;
+package br.com.jobsnow.database.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,11 +16,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.jobsnow.database_client.client.Client;
-import br.com.jobsnow.database_client.params.EspecificacaoCampo;
-import br.com.jobsnow.database_client.params.FuncaoAgregacao;
-import br.com.jobsnow.database_client.params.Join;
-import br.com.jobsnow.database_client.params.RequestParamsDTO;
+import br.com.jobsnow.database.api.EspecificacaoCampo;
+import br.com.jobsnow.database.api.Join;
+import br.com.jobsnow.database.client.params.Sumarizacao;
+import br.com.jobsnow.database.client.params.RequestParamsDTO;
 
 public class DatabaseInterface {
 	public final String tabela;
@@ -143,22 +142,7 @@ public class DatabaseInterface {
 		return retorno;
 	}
 	
-	public Map<String, Integer> _obterTotais(Map<String, String> restricoes){
-		LinkedHashSet<FuncaoAgregacao> funcoes = new LinkedHashSet<>();
-		FuncaoAgregacao funcao = new FuncaoAgregacao("count", "*");
-		funcoes.add(funcao);
-		LinkedHashSet<Join> joins = new LinkedHashSet<>();
-		LinkedHashSet<EspecificacaoCampo> restr = new LinkedHashSet<>();
-		Set<String> keySet = restricoes.keySet();
-		for (String chave : keySet) {
-			String valor  = restricoes.get(chave);
-
-		}
-		Map<String, Integer> _obterTotais = this._obterTotais(funcoes, joins, restr);
-		return _obterTotais;
-	}
-	
-	public Map<String, Integer> _obterTotais(LinkedHashSet<FuncaoAgregacao> funcoes, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento){
+	public Map<String, Integer> _obterTotais(LinkedHashSet<Sumarizacao> funcoes, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento){
 		boolean isTabelaValida = this.tabela != null && this.tabela.length() > 0;
 
 		if(false == isTabelaValida){
@@ -287,7 +271,7 @@ public class DatabaseInterface {
 		}
 	}
 	
-	private void _verificaSeAgregacaoEstaPreenchida(LinkedHashSet<FuncaoAgregacao> funcaoAgregacao) {
+	private void _verificaSeAgregacaoEstaPreenchida(LinkedHashSet<Sumarizacao> funcaoAgregacao) {
 		boolean funcoesAgregacaoInvalida = funcaoAgregacao == null || funcaoAgregacao.isEmpty();
 		
 		if (funcoesAgregacaoInvalida) {

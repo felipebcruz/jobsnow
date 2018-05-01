@@ -28,11 +28,11 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.jobsnow.database_client.DatabaseInterface;
-import br.com.jobsnow.database_client.client.Client;
-import br.com.jobsnow.database_client.params.EspecificacaoCampo;
-import br.com.jobsnow.database_client.params.FuncaoAgregacao;
-import br.com.jobsnow.database_client.params.RequestParamsDTO;
+import br.com.jobsnow.database.api.EspecificacaoCampo;
+import br.com.jobsnow.database.client.Client;
+import br.com.jobsnow.database.client.DatabaseInterface;
+import br.com.jobsnow.database.client.params.Sumarizacao;
+import br.com.jobsnow.database.client.params.RequestParamsDTO;
 
 public class DatabaseInterfaceTest {
 	private Client client;
@@ -193,9 +193,9 @@ public class DatabaseInterfaceTest {
 
 	@Test
 	public void _deveObterTotal() throws Exception {
-		LinkedHashSet<FuncaoAgregacao> funcao = new LinkedHashSet<>();
+		LinkedHashSet<Sumarizacao> funcao = new LinkedHashSet<>();
 		
-		funcao.add(new FuncaoAgregacao("count", "*"));
+		funcao.add(new Sumarizacao("count", "*"));
 		
 		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<EspecificacaoCampo>();
         EspecificacaoCampo esp = new EspecificacaoCampo("id_teste", "2", "Integer");

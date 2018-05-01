@@ -1,13 +1,13 @@
-package br.com.jobsnow.database_client.params;
+package br.com.jobsnow.database.client.params;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class FuncaoAgregacao {
+public class Sumarizacao {
 	public final String nomeDaFuncao;
 	public final String nomeDoCampo;
 	
-	public FuncaoAgregacao(String nomeFuncao, String nomeCampo) {
+	public Sumarizacao(String nomeFuncao, String nomeCampo) {
 		this.nomeDaFuncao = nomeFuncao;
 		this.nomeDoCampo = nomeCampo;
 	}
@@ -23,9 +23,9 @@ public class FuncaoAgregacao {
 
 	@Override
 	public boolean equals(Object obj) {
-		FuncaoAgregacao funcaoAgregacao = (FuncaoAgregacao) obj;
+		Sumarizacao funcaoAgregacao = (Sumarizacao) obj;
 
-		boolean naoEhMesmoTipo = false == obj instanceof FuncaoAgregacao;
+		boolean naoEhMesmoTipo = false == obj instanceof Sumarizacao;
 		boolean naoEhMesmoNomeDoCampo = false == this.nomeDoCampo.equalsIgnoreCase(funcaoAgregacao.nomeDoCampo);
 		boolean naoEhMesmoNomeDaFuncao = false == this.nomeDaFuncao.equalsIgnoreCase(funcaoAgregacao.nomeDaFuncao);
 

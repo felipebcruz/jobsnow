@@ -1,4 +1,4 @@
-package br.com.jobsnow.database_client.client;
+package br.com.jobsnow.database.client;
 
 import java.net.URI;
 

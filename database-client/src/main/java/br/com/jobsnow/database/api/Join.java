@@ -1,17 +1,16 @@
-package br.com.jobsnow.database_client.params;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+package br.com.jobsnow.database.api;
 
 public class Join {
 	public final String nomeDaTabelaDaEsquerda;
-	public final String nomeDoCampoDaEsquerda;
+	public final String nomeDoCampoDaEsquerda = "id";
 	public final String nomeDaTabelaDaDireita;
 	public final String nomeDoCampoDaDireita;
 
-	public Join(String nomeDaTabelaDaEsquerda, String nomeDoCampoDaEsquerda, String nomeDaTabelaDaDireita, String nomeDoCampoDaDireita) {
+
+	
+	public Join(String nomeDaTabelaDaEsquerda, String nomeDaTabelaDaDireita, String nomeDoCampoDaDireita) {
+
 		this.nomeDaTabelaDaEsquerda = nomeDaTabelaDaEsquerda;
-		this.nomeDoCampoDaEsquerda = nomeDoCampoDaEsquerda;
 		this.nomeDaTabelaDaDireita = nomeDaTabelaDaDireita;
 		this.nomeDoCampoDaDireita = nomeDoCampoDaDireita;
 	}
@@ -59,12 +58,4 @@ public class Join {
 		return true;
 	}
 	
-	@Override
-	public String toString() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		GsonBuilder setPrettyPrinting = gsonBuilder.setPrettyPrinting();
-		Gson create = setPrettyPrinting.create();
-		String json = create.toJson(this);
-		return json;
-	}
 }
