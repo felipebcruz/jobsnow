@@ -212,7 +212,7 @@ public class DatabaseInterfaceTest {
 		String conteudo = new ObjectMapper().writeValueAsString(registrosEsperados);
 	    when(this.client._doGet(Mockito.any(RequestParamsDTO.class), Mockito.anyString())).thenReturn(new ByteArrayInputStream(StandardCharsets.UTF_8.encode(conteudo).array()));
 		
-		Map<String, Integer> registros = new DatabaseInterface("entrevista",this.client, new HashSet<>())._obterTotais(funcao, null, restricoes);
+		Map<String, Long> registros = new DatabaseInterface("entrevista",this.client, new HashSet<>())._obterTotais(funcao, null, restricoes);
         
 		assertEquals(registrosEsperados, registros);
 		verify(this.client, times(1))._doGet(Mockito.any(RequestParamsDTO.class), Mockito.anyString());
@@ -273,7 +273,8 @@ public class DatabaseInterfaceTest {
 	    String conteudoLista = new ObjectMapper().writeValueAsString(teste);
 	    when(this.client._doGet(Mockito.anyString())).thenReturn(new ByteArrayInputStream(StandardCharsets.UTF_8.encode(conteudoLista).array()));
 		
-		new DatabaseInterface("entrevista", 5L,this.client, camposTabela)._alterarStatusDeUmUnicoRegistro(novosValores, null);
+	    LinkedHashSet<EspecificacaoCampo> x = null;
+		new DatabaseInterface("entrevista", 5L,this.client, camposTabela)._alterarStatusDeUmUnicoRegistro(novosValores, x);
 
 		verify(this.client)._doDelete(Mockito.any(RequestParamsDTO.class), Mockito.anyString());
 		verifyNoMoreInteractions(this.client);

@@ -1,7 +1,6 @@
 package br.com.jobsnow.database.client;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -11,15 +10,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.jobsnow.database.api.EspecificacaoCampo;
 import br.com.jobsnow.database.api.Join;
-import br.com.jobsnow.database.client.params.Sumarizacao;
 import br.com.jobsnow.database.client.params.RequestParamsDTO;
+import br.com.jobsnow.database.client.params.Sumarizacao;
 
 public class DatabaseInterface {
 	public final String tabela;
@@ -33,12 +30,7 @@ public class DatabaseInterface {
 		this.idRegistro = null;
 		this.client = new Client();
 		
-		try {
-			this.camposTabela = this._getCampos();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("", e);
-		}
+		this.camposTabela = this._getCampos();
 	}
 	
 	public DatabaseInterface(String tabela) {
@@ -60,19 +52,27 @@ public class DatabaseInterface {
 		this.camposTabela = camposTabela;
 	}
 	
+	public List<Map<String, String>> _selecioneVariosRegistros(Map<String, String> restricoes, String...colunasParaTrazer){
+		
+		boolean naoFoiEspecificadoQuaisColunasTrazer = colunasParaTrazer == null || colunasParaTrazer.length == 0;
+		
+		if(naoFoiEspecificadoQuaisColunasTrazer) {
+			throw new CamposDoSelectNaoForamEspecificadosException();
+		}
+		
+		LinkedHashSet<Join> joins = new LinkedHashSet<>();
+		LinkedHashSet<EspecificacaoCampo> restrictions = this.adequarRestricoes(restricoes);
+		List<Map<String, String>> _selecioneVariosRegistros = this._selecioneVariosRegistros(colunasParaTrazer, joins, restrictions, colunasParaTrazer[0]);
+		return _selecioneVariosRegistros;
+	}
+	
 	public List<Map<String, String>> _selecioneVariosRegistros(String[] camposParaSelecionar, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaOrdenacao) {
 		this._verificaCamposObrigatorios(camposParaSelecionar);
 		
 		String url = this.urlDatabase.toString();
 		RequestParamsDTO params = new RequestParamsDTO(camposParaSelecionar,this.tabela, joins, restricoes, camposParaOrdenacao);
 
-		InputStream resultado;
-		try {
-			resultado = this.client._doGet(params, url);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		}
+		InputStream resultado = this.client._doGet(params, url);
 		
 		List<Map<String, String>> retorno = null;
 		String line = "";
@@ -84,15 +84,8 @@ public class DatabaseInterface {
 			while ((line = rd.readLine()) != null) {
 				retorno = new ObjectMapper().readValue(line, new TypeReference<List<Map<String, String>>>(){});
 			}
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
+		}  catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		
 		return retorno;
@@ -110,13 +103,7 @@ public class DatabaseInterface {
 		String url = this.urlDatabase.append("/").append(this.idRegistro).toString();
 		RequestParamsDTO params = new RequestParamsDTO(camposParaSelecionar,this.tabela, joins, restricoes, this.idRegistro,null);
 		
-		InputStream resultado;
-		try {
-			resultado = this.client._doGet(params, url);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		}
+		InputStream resultado = this.client._doGet(params, url);
 		
 		String line = "";
 		Map<String, String> retorno = null;
@@ -128,21 +115,42 @@ public class DatabaseInterface {
 			while ((line = rd.readLine()) != null) {
 				retorno = new ObjectMapper().readValue(line, new TypeReference<Map<String, String>>(){});
 			}
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
+		}  catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		
 		return retorno;
 	}
 	
-	public Map<String, Integer> _obterTotais(LinkedHashSet<Sumarizacao> funcoes, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento){
+	public Map<String, Long> _obterTotais(Map<String, String> restricoes){
+		
+		LinkedHashSet<EspecificacaoCampo> restricions = this.adequarRestricoes(restricoes);
+		LinkedHashSet<Sumarizacao> funcoes = this.obterFuncaoCount();
+		LinkedHashSet<Join> joins = new LinkedHashSet<>();
+		
+		Map<String, Long> _obterTotais = this._obterTotais(funcoes, joins, restricions);
+		return _obterTotais;
+	}
+
+	private LinkedHashSet<Sumarizacao> obterFuncaoCount() {
+		LinkedHashSet<Sumarizacao> funcoes = new LinkedHashSet<>();
+		Sumarizacao count = new Sumarizacao("Count", "id");
+		funcoes.add(count);
+		return funcoes;
+	}
+
+	private LinkedHashSet<EspecificacaoCampo> adequarRestricoes(Map<String, String> restricoes) {
+		LinkedHashSet<EspecificacaoCampo> restricions = new LinkedHashSet<>();
+		Set<String> keySet = restricoes.keySet();
+		for (String nomeDoCampo : keySet) {
+			String valorDoCampo = restricoes.get(nomeDoCampo);
+			EspecificacaoCampo restriction  = new EspecificacaoCampo(nomeDoCampo, valorDoCampo);
+			restricions.add(restriction);
+		}
+		return restricions;
+	}
+	
+	public Map<String, Long> _obterTotais(LinkedHashSet<Sumarizacao> funcoes, LinkedHashSet<Join> joins, LinkedHashSet<EspecificacaoCampo> restricoes, String... camposParaAgrupamento){
 		boolean isTabelaValida = this.tabela != null && this.tabela.length() > 0;
 
 		if(false == isTabelaValida){
@@ -154,33 +162,21 @@ public class DatabaseInterface {
 		String url = this.urlDatabase.append("/totais").toString();
 		RequestParamsDTO params = new RequestParamsDTO(funcoes, this.tabela, joins, restricoes, camposParaAgrupamento);
 
-		InputStream resultado;
-		try {
-			resultado = this.client._doGet(params, url);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		}
+		InputStream resultado = this.client._doGet(params, url);
 		
 		String line = "";
-		Map<String, Integer> retorno = null;
+		Map<String, Long> retorno = null;
 		
 		try (
 			InputStreamReader inputStreamReader = new InputStreamReader(resultado);
 			BufferedReader rd = new BufferedReader(inputStreamReader);
 		){
+			// Felipe, esse loop só passa uma vez?
 			while ((line = rd.readLine()) != null) {
-				retorno = new ObjectMapper().readValue(line, new TypeReference<Map<String, Integer>>(){});
+				retorno = new ObjectMapper().readValue(line, new TypeReference<Map<String, Long>>(){});
 			}
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
+		}  catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		
 		return retorno;
@@ -208,13 +204,19 @@ public class DatabaseInterface {
 		
 		this.client._doPatch(params, url);
 	}
+
+	
+	public void _alterarStatusDeUmUnicoRegistro(Long novoValorStatus, Long id) {
+		LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores = new LinkedHashSet<>();
+		EspecificacaoCampo valor = new EspecificacaoCampo("status", novoValorStatus.toString());
+		camposMaisSeusNovosValores.add(valor);
+		String url = this.urlDatabase.append("/").append(this.idRegistro).toString();
+		RequestParamsDTO params = new RequestParamsDTO(this.tabela, camposMaisSeusNovosValores, new LinkedHashSet<>(), this.idRegistro);
+		
+		this.client._doDelete(params, url);
+	}
 	
 	public void _alterarStatusDeUmUnicoRegistro(LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores, LinkedHashSet<EspecificacaoCampo> restricoes){
-		boolean idRegistroValido = this.idRegistro != null;
-
-		if(false == idRegistroValido) {
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
-		}
 
 		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
 		
@@ -224,13 +226,21 @@ public class DatabaseInterface {
 		this.client._doDelete(params, url);
 	}
 
-	public Long _inserirUmUnicoRegistro(LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores) throws Exception{
+	public Long _inserirUmUnicoRegistro(Map<String, String> valores){
+		LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores = this.adequarRestricoes(valores);
+		
+		Long _inserirUmUnicoRegistro = this._inserirUmUnicoRegistro(camposMaisSeusNovosValores);
+		return _inserirUmUnicoRegistro;
+	}	
+	
+	public Long _inserirUmUnicoRegistro(LinkedHashSet<EspecificacaoCampo> camposMaisSeusNovosValores){
 		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
 		
 		String url = this.urlDatabase.toString();
 		RequestParamsDTO params = new RequestParamsDTO(this.tabela, camposMaisSeusNovosValores);
 		
-		return this.client._doPost(params, url);
+		Long _doPost = this.client._doPost(params, url);
+		return _doPost;
 	}
 
 	private void _verificaCamposObrigatorios(String[] camposParaSelecionar) {
@@ -272,26 +282,17 @@ public class DatabaseInterface {
 	}
 	
 	private void _verificaSeAgregacaoEstaPreenchida(LinkedHashSet<Sumarizacao> funcaoAgregacao) {
+
 		boolean funcoesAgregacaoInvalida = funcaoAgregacao == null || funcaoAgregacao.isEmpty();
 		
 		if (funcoesAgregacaoInvalida) {
-			// TODO
-			throw new RuntimeException("");
+			throw new RuntimeException("Especifique ao menos uma função de agregação");
 		}
 	}
 	
 	private Set<String> _getCampos() {
-		if (this.tabela == null) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("");
-		}
-		
-		boolean empty = this.tabela.isEmpty();
 
-		if(empty) {
-			throw new RuntimeException("");
-		}
-		
+
 		String url = this.urlDatabase.append("/campos").append("/").append(this.tabela).toString();
 		
 		InputStream resultado = this.client._doGet(url);
@@ -303,15 +304,8 @@ public class DatabaseInterface {
 			while ((line = rd.readLine()) != null) {
 				camposTabela = new ObjectMapper().readValue(line, new TypeReference<Set<String>>(){});
 			}
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("",e);
+		}  catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 
 		return camposTabela;
