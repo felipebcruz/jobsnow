@@ -95,7 +95,7 @@ public class DatabaseInterface {
 		boolean idRegistroValido = this.idRegistro != null;
 
 		if(false == idRegistroValido) {
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher o idRegistro.");
 		}
 
 		this._verificaCamposObrigatorios(camposParaSelecionar);
@@ -154,7 +154,7 @@ public class DatabaseInterface {
 		boolean isTabelaValida = this.tabela != null && this.tabela.length() > 0;
 
 		if(false == isTabelaValida){
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher a tabela.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher a tabela.");
 		} 
 		
 		this._verificaSeAgregacaoEstaPreenchida(funcoes);
@@ -194,7 +194,7 @@ public class DatabaseInterface {
 		boolean idRegistroValido = this.idRegistro != null;
 
 		if(false == idRegistroValido) {
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher o idRegistro.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher o idRegistro.");
 		}
 		
 		this._verificaCamposObrigatorios(camposMaisSeusNovosValores);
@@ -250,15 +250,15 @@ public class DatabaseInterface {
 		boolean camposParaSelecionarInvalidos = false == this.camposTabela.containsAll(camposSelect);
 		
 		if(false == isTabelaValida){
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher a tabela.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher a tabela.");
 		} 
 		
 		if(false == isCamposSelectValido) {
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher o camposSelect.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher o camposSelect.");
 		}
 		
 		if (camposParaSelecionarInvalidos) {
-			throw new RuntimeException("Os campos do select são inválidos para esta tabela.");
+			throw new RuntimeException("Os campos do select sao invalidos para esta tabela.");
 		}
 	}
 	
@@ -269,15 +269,15 @@ public class DatabaseInterface {
 		boolean camposParaSelecionarInvalidos = false == this.camposTabela.containsAll(camposSelect);
 		
 		if(false == isTabelaValida){
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher a tabela.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher a tabela.");
 		} 
 		
 		if(false == isNovosValoresValidos){
-			throw new RuntimeException("Para executar esta tarefa é necessário preencher os camposMaisSeusNovosValores.");
+			throw new RuntimeException("Para executar esta tarefa e necessario preencher os camposMaisSeusNovosValores.");
 		}
 		
 		if (camposParaSelecionarInvalidos) {
-			throw new RuntimeException("Os campos dessa operação são inválidos para esta tabela.");
+			throw new RuntimeException("Os campos dessa operacao sao invalidos para esta tabela.");
 		}
 	}
 	
@@ -286,7 +286,7 @@ public class DatabaseInterface {
 		boolean funcoesAgregacaoInvalida = funcaoAgregacao == null || funcaoAgregacao.isEmpty();
 		
 		if (funcoesAgregacaoInvalida) {
-			throw new RuntimeException("Especifique ao menos uma função de agregação");
+			throw new RuntimeException("Especifique ao menos uma funcao de agregacao");
 		}
 	}
 	

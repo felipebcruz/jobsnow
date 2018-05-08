@@ -48,7 +48,7 @@ public class DatabaseInterfaceTest {
 	@Test
 	public void _naoDeveSelecionarVariosRegistrosSemTabelaPreenchida() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher a tabela.");
+		this.expectedEx.expectMessage("Para executar esta tarefa e necessario preencher a tabela.");
 		String[] ordenacao = null;
 		new DatabaseInterface(null, this.client, new HashSet<>())._selecioneVariosRegistros(new String[] {}, null, null,ordenacao);
 	}
@@ -56,7 +56,7 @@ public class DatabaseInterfaceTest {
 	@Test
 	public void _naoDeveSelecionarVariosRegistrosSemCamposSelect() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher o camposSelect.");
+		this.expectedEx.expectMessage("Para executar esta tarefa e necessario preencher o camposSelect.");
 		String[] ordenacao = null;
 		new DatabaseInterface("teste",this.client, new HashSet<>())._selecioneVariosRegistros(new String[] {}, null, null,ordenacao);
 	}
@@ -79,7 +79,7 @@ public class DatabaseInterfaceTest {
 	@Test
 	public void _naoDeveSelecionarUmUnicoRegistroSemIdRegistroPreenchido() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher o idRegistro.");
+		this.expectedEx.expectMessage("Para executar esta tarefa e necessario preencher o idRegistro.");
 		String[] campos = {"teste"};
 		new DatabaseInterface("teste",this.client, new HashSet<>())._selecioneUmUnicoRegistro(campos, null, null);
 	}
@@ -87,7 +87,7 @@ public class DatabaseInterfaceTest {
 	@Test
 	public void _naoDeveAtualizarUmUnicoRegistroSemCamposMaisSeusNovosValoresPreenchidos() throws Exception {
 		this.expectedEx.expect(RuntimeException.class);
-		this.expectedEx.expectMessage("Para executar esta tarefa é necessário preencher os camposMaisSeusNovosValores.");
+		this.expectedEx.expectMessage("Para executar esta tarefa e necessario preencher os camposMaisSeusNovosValores.");
 		new DatabaseInterface("teste",1L, this.client, new HashSet<>())._atualizarUmUnicoRegistro(new LinkedHashSet<>(), null);
 	}
 	
@@ -206,8 +206,8 @@ public class DatabaseInterfaceTest {
         
         restricoes.add(esp);
 		
-		Map<String, Integer> registrosEsperados = new HashMap<String, Integer>();
-		registrosEsperados.put("total", 2);
+		Map<String, Long> registrosEsperados = new HashMap<String, Long>();
+		registrosEsperados.put("total", 2L);
 		
 		String conteudo = new ObjectMapper().writeValueAsString(registrosEsperados);
 	    when(this.client._doGet(Mockito.any(RequestParamsDTO.class), Mockito.anyString())).thenReturn(new ByteArrayInputStream(StandardCharsets.UTF_8.encode(conteudo).array()));
