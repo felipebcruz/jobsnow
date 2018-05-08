@@ -32,7 +32,6 @@ public class ImplServiceDatabase implements ServiceDatabase {
 
 	@Override
 	public List<Map<String, String>> _selecioneVariosRegistros(DatabaseParamsDTO params) {
-		
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
 		
 		String sql = params._fazerSelect();
@@ -46,7 +45,6 @@ public class ImplServiceDatabase implements ServiceDatabase {
 
 	@Override
 	public Map<String, String> _selecioneUmUnicoRegistro(DatabaseParamsDTO params) {
-		
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
 		
 		String sql = params._fazerSelectPeloId();
@@ -60,7 +58,6 @@ public class ImplServiceDatabase implements ServiceDatabase {
 
 	@Override
 	public Map<String, String> _obterTotais(DatabaseParamsDTO params){
-		
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
 		
 		String sql = params._fazerSelectDeAgregacao();
@@ -73,8 +70,6 @@ public class ImplServiceDatabase implements ServiceDatabase {
 
 	@Override
 	public boolean _verificarExistenciaDeRegistrosDadasEstasRestricoes(DatabaseParamsDTO params) {
-
-		
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
 		
 		String string = params._fazerSelectDeVerificacaoDeExistenciaDeRegistro();
@@ -86,18 +81,26 @@ public class ImplServiceDatabase implements ServiceDatabase {
 		return b;
 	}
 
-
 	@Override
-	public void _atualizarUmUnicoRegistro(DatabaseParamsDTO params){
-		
+	public void _atualizarRegistros(DatabaseParamsDTO params){
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
+		
+		boolean deveExecutarEmLotes = params.camposMaisSeusNovosValores.size() > 1;
+		Map<String, Object> valores = new HashMap<>();
+		
+		if (false == deveExecutarEmLotes) {
+			valores.put("idRegistro", params.idRegistro);
+		}
+		
 		String sql = params._montarSqlDoUpdate();
-		this.jdbcTemplate.update(sql);
-	}
 
+		params.camposMaisSeusNovosValores.forEach(c -> valores.put(c.nomeDoCampo, c._converteParaTipoCorreto()));
+		
+		this.namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(valores));
+	}
+	
 	@Override
 	public Long _inserirUmUnicoRegistro(DatabaseParamsDTO params) {
-		
 		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
 		
 		String sql = params._montarSqlDoInsert();
@@ -109,6 +112,15 @@ public class ImplServiceDatabase implements ServiceDatabase {
 		this.namedParameterJdbcTemplate.update(sql, parametersInsert, keyHolder, new String[]{colunaChavePrimaria});
 		
 		return keyHolder.getKey().longValue();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void _inserirRegistrosEmBatch(DatabaseParamsDTO params) {
+		this._assegurarQueEstesParametrosNaoSaoNulosAndPossuemTabela(params);
+		String sql = params._montarSqlDoInsert();
+		List<Map<String, Object>> batchValues = params._getValoresInsertBatch();
+		
+		this.namedParameterJdbcTemplate.batchUpdate(sql, batchValues.toArray(new Map[params.camposMaisSeusNovosValoresInsertBatch.size()]));
 	}
 	
 	@Override
@@ -133,9 +145,7 @@ public class ImplServiceDatabase implements ServiceDatabase {
 		return new HashSet<>(camposTabela);
 	}
 	
-	
 	private Map<String, String> _getMapaFormatado(Map<String, Object> resultado){
-
 		if(resultado == null) {
 			return null;
 		}
@@ -148,7 +158,6 @@ public class ImplServiceDatabase implements ServiceDatabase {
 	}
 	
 	private List<Map<String, String>> _getListaFormatada(List<Map<String, Object>> resultado){
-		
 		List<Map<String, String>> listaFormatada = new ArrayList<>();
 
 		if(resultado == null) {

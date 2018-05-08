@@ -15,9 +15,11 @@ public interface ServiceDatabase {
 	
 	public boolean _verificarExistenciaDeRegistrosDadasEstasRestricoes(DatabaseParamsDTO params);
 	
-	public void _atualizarUmUnicoRegistro(DatabaseParamsDTO params);
+	public void _atualizarRegistros(DatabaseParamsDTO params);
 	
 	public Long _inserirUmUnicoRegistro(DatabaseParamsDTO params);
+	
+	public void _inserirRegistrosEmBatch(DatabaseParamsDTO params);
 
 	public Set<String> _getCamposTabela(String tabela, String tblComNomesDosCampos);
 }

@@ -143,7 +143,7 @@ public class DatabaseResourceTest {
 	
 	@Test
 	public void _naoPodeAtualizarUmRegistroSemTabela() throws Exception {
-		doThrow(BadSqlGrammarException.class).when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		doThrow(BadSqlGrammarException.class).when(this.srvDatabase)._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.url.append("/{id}");
 		this.mockMvc.perform(patch(this.url.toString(), 1L)
@@ -153,7 +153,7 @@ public class DatabaseResourceTest {
 		.andExpect(status().isBadRequest())
 		.andExpect(jsonPath("$.message", is("O sql descrito no parametro e invalido")));
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase);
 	}
 	
@@ -162,7 +162,7 @@ public class DatabaseResourceTest {
 		this.url.append("/{id}");
 		
 		doThrow(new IllegalArgumentException("Os campos do update devem n�o podem estar null"))
-			.when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+			.when(this.srvDatabase)._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.mockMvc.perform(patch(this.url.toString(),1L)
 				.accept(this.contentType)
@@ -171,7 +171,7 @@ public class DatabaseResourceTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message", is("Os campos do update devem n�o podem estar null")));
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase); 
 	}
 	
@@ -180,7 +180,7 @@ public class DatabaseResourceTest {
 		this.url.append("/{id}");
 		
 		doThrow(new IllegalArgumentException("Os campos do update devem n�o podem estar null"))
-			.when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+			.when(this.srvDatabase)._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.mockMvc.perform(delete(this.url.toString(),1L)
 				.accept(this.contentType)
@@ -189,13 +189,13 @@ public class DatabaseResourceTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message", is("Os campos do update devem n�o podem estar null")));
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase); 
 	}
 	
 	@Test
 	public void _naoPodeAlterarStatusUmRegistroSemTabela() throws Exception {
-		doThrow(BadSqlGrammarException.class).when(this.srvDatabase)._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		doThrow(BadSqlGrammarException.class).when(this.srvDatabase)._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		
 		this.url.append("/{id}");
 		this.mockMvc.perform(delete(this.url.toString(), 1L)
@@ -205,7 +205,7 @@ public class DatabaseResourceTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message", is("O sql descrito no parametro e invalido")));
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase);
 	}
 	
@@ -311,7 +311,7 @@ public class DatabaseResourceTest {
 				.content(new ObjectMapper().writeValueAsString(this.databaseParamsDTO))) 
 				.andExpect(status().isNoContent()).andReturn();
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase);
 	}
 
@@ -326,7 +326,7 @@ public class DatabaseResourceTest {
 				.content(new ObjectMapper().writeValueAsString(this.databaseParamsDTO)))
 				.andExpect(status().isNoContent()).andReturn();
 		
-		verify(this.srvDatabase, times(1))._atualizarUmUnicoRegistro(Mockito.any(DatabaseParamsDTO.class));
+		verify(this.srvDatabase, times(1))._atualizarRegistros(Mockito.any(DatabaseParamsDTO.class));
 		verifyNoMoreInteractions(this.srvDatabase);
 	}
 	

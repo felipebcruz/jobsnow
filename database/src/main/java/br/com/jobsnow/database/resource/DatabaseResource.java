@@ -96,7 +96,7 @@ public class DatabaseResource {
 		
 		DatabaseParamsDTO params = new DatabaseParamsDTO(paramsRequest.tabela, paramsRequest.camposMaisSeusNovosValores, null, idRegistro);
 		
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -108,7 +108,7 @@ public class DatabaseResource {
 		
 		DatabaseParamsDTO params = new DatabaseParamsDTO(paramsRequest.tabela, paramsRequest.camposMaisSeusNovosValores, null, idRegistro);
 		
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -124,6 +124,15 @@ public class DatabaseResource {
 		return ResponseEntity.created(location).build();
 	}
 
+	@ApiOperation(value = "Insere no banco o registro especificado")
+	@PostMapping(value = "/batch")
+	public ResponseEntity<Void> _inserirRegistrosEmBatch(@RequestBody DatabaseParamsDTO params) throws Exception {
+		logger.info("/api/v1/database/registros - POST > params = " + params);
+		this.srvDatabase._inserirRegistrosEmBatch(params);
+
+		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	}
+	
 	@ApiOperation(value = "Retorna os nomes dos campos existentes da tabela")
 	@GetMapping(value = "/campos/{tabela}")
 	public ResponseEntity<Set<String>> _getCamposTabela(@PathVariable("tabela") String tabela) throws Exception{

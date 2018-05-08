@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,10 +90,10 @@ public class ImplServiceDatabaseTest {
 	
 	@Test
 	public void _quandoOsCamposDoUpdateEstiveremNull() throws Exception {
-		DatabaseParamsDTO params = new DatabaseParamsDTO("teste",null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO("teste",new LinkedHashSet<>());
 		
 		this.expectedEx.expect(AusenciaDeCamposMaisValoresException.class);
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 	}
 	
 	@Test
@@ -104,7 +105,7 @@ public class ImplServiceDatabaseTest {
 		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela,camposMaisSeusNovosValores,null,null);
 		
 		this.expectedEx.expect(IDDestaEntidadeDeveriaEstarPresenteException.class);
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 	}
 	
 	@Test
@@ -112,12 +113,12 @@ public class ImplServiceDatabaseTest {
 		DatabaseParamsDTO params = new DatabaseParamsDTO(null,null,null,null);
 		
 		this.expectedEx.expect(EntidadeSemTabelaException.class);
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 	}
 	
 	@Test
 	public void _quandoCamposDoInsertEstiveremNull() throws Exception {
-		DatabaseParamsDTO params = new DatabaseParamsDTO("teste", null);
+		DatabaseParamsDTO params = new DatabaseParamsDTO("teste", new LinkedHashSet<>());
 
 		this.expectedEx.expect(AusenciaDeCamposMaisValoresException.class);
 		this.srvDatabase._inserirUmUnicoRegistro(params);
@@ -142,7 +143,7 @@ public class ImplServiceDatabaseTest {
 	public void _quandoParamsEstiverNullEmAtualizarUmUnicoRegistro() throws Exception {
 		this.expectedEx.expect(IllegalArgumentException.class);
 		this.expectedEx.expectMessage("Os parametros do banco de dados nao foram informados");
-		this.srvDatabase._atualizarUmUnicoRegistro(null);
+		this.srvDatabase._atualizarRegistros(null);
 	}
 	
 	@Test
@@ -220,7 +221,7 @@ public class ImplServiceDatabaseTest {
 
 		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela, novosValores, null, idRegistro);
 
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 
 		when(this.jdbcTemplate.queryForMap(Mockito.anyString())).thenReturn(valores);
 		
@@ -229,8 +230,9 @@ public class ImplServiceDatabaseTest {
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 
 		assertEquals(valores, registroAlterado);
-		verify(this.jdbcTemplate, times(1)).update(Mockito.anyString());
+		verify(this.namedParameterJdbcTemplate, times(1)).update(Mockito.anyString(), Mockito.any(MapSqlParameterSource.class));
 		verify(this.jdbcTemplate, times(1)).queryForMap(Mockito.anyString());
+		verifyNoMoreInteractions(this.namedParameterJdbcTemplate);
 		verifyNoMoreInteractions(this.jdbcTemplate);
 	}
 
@@ -250,15 +252,16 @@ public class ImplServiceDatabaseTest {
 
 		when(this.jdbcTemplate.queryForMap(Mockito.anyString())).thenReturn(esperado);
 
-		this.srvDatabase._atualizarUmUnicoRegistro(params);
+		this.srvDatabase._atualizarRegistros(params);
 
 		params = new DatabaseParamsDTO(camposSelect,tabela,null,null,idRegistro);
 		Map<String, String> registroAlterado = this.srvDatabase._selecioneUmUnicoRegistro(params);
 
 		assertEquals(esperado, registroAlterado);
-		verify(this.jdbcTemplate, times(1)).update(Mockito.anyString());
+		verify(this.namedParameterJdbcTemplate, times(1)).update(Mockito.anyString(), Mockito.any(MapSqlParameterSource.class));
 		verify(this.jdbcTemplate, times(1)).queryForMap(Mockito.anyString());
 		verifyNoMoreInteractions(this.jdbcTemplate);
+		verifyNoMoreInteractions(this.namedParameterJdbcTemplate);
 	}
 
 	@Ignore
@@ -356,5 +359,127 @@ public class ImplServiceDatabaseTest {
 		assertEquals(camposEsperados, camposTabela);
 		verify(this.jdbcTemplate, times(1)).queryForList(sql.toString(), String.class);
 		verifyNoMoreInteractions(this.jdbcTemplate);
+	}
+	
+	@Test
+	public void _deveAtualizarRegistrosEmLote() {
+		String camposSelect[] = {"id", "status", "remetente"};
+		String tabela = "entrevista";
+		LinkedHashSet<EspecificacaoCampo> novosValores = new LinkedHashSet<>();
+		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
+		Long idRegistro = null;
+		
+		novosValores.add(new EspecificacaoCampo("status", "15", "Integer"));
+		novosValores.add(new EspecificacaoCampo("remetente", "17", "Integer"));
+
+		restricoes.add(new EspecificacaoCampo("id_candidato", "2", "Integer"));
+		
+		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela, novosValores, restricoes, idRegistro);
+		this.srvDatabase._atualizarRegistros(params);
+
+		String[] camposParaOrdenacao = {"id"};
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,camposParaOrdenacao);
+		
+		List<Map<String, Object>> valores = new ArrayList<>();
+		Map<String, Object> retorno = new HashMap<>();
+		
+		retorno.put("id", "3");
+		retorno.put("status", "15");
+		retorno.put("remetente", "17");
+		valores.add(retorno);
+		
+		retorno = new HashMap<>();
+		retorno.put("id", "4");
+		retorno.put("status", "15");
+		retorno.put("remetente", "17");
+		
+		valores.add(retorno);
+		
+		retorno = new HashMap<>();
+		retorno.put("id", "5");
+		retorno.put("status", "15");
+		retorno.put("remetente", "17");
+		
+		valores.add(retorno);
+
+		when(this.jdbcTemplate.queryForList(Mockito.anyString())).thenReturn(valores);
+		
+		List<Map<String,String>> registroAlterado = this.srvDatabase._selecioneVariosRegistros(params);
+		
+		assertEquals(valores, registroAlterado);
+		
+		verify(this.namedParameterJdbcTemplate, times(1)).update(Mockito.anyString(), Mockito.any(MapSqlParameterSource.class));
+		verifyNoMoreInteractions(this.namedParameterJdbcTemplate);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void _deveInserirRegistrosEmLote() {
+		String tabela = "entrevista";
+		List<LinkedHashSet<EspecificacaoCampo>> novosValores = new LinkedList<>();
+		LinkedHashSet<EspecificacaoCampo> insert1 = new LinkedHashSet<>();
+		LinkedHashSet<EspecificacaoCampo> insert2 = new LinkedHashSet<>();
+		LinkedHashSet<EspecificacaoCampo> insert3 = new LinkedHashSet<>();
+		
+		insert1.add(new EspecificacaoCampo("id", "6", "Integer"));
+		insert1.add(new EspecificacaoCampo("status", "11", "Integer"));
+		insert1.add(new EspecificacaoCampo("remetente", "10", "Integer"));
+		insert1.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
+		
+		novosValores.add(insert1);
+		
+		insert2.add(new EspecificacaoCampo("id", "7", "Integer"));
+		insert2.add(new EspecificacaoCampo("status", "12", "Integer"));
+		insert2.add(new EspecificacaoCampo("remetente", "10", "Integer"));
+		insert2.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
+		
+		novosValores.add(insert2);
+		
+		insert3.add(new EspecificacaoCampo("id", "8", "Integer"));
+		insert3.add(new EspecificacaoCampo("status", "13", "Integer"));
+		insert3.add(new EspecificacaoCampo("remetente", "10", "Integer"));
+		insert3.add(new EspecificacaoCampo("id_candidato", "1", "Integer"));
+		
+		novosValores.add(insert3);
+		
+		DatabaseParamsDTO params = new DatabaseParamsDTO(tabela, novosValores);
+		
+		this.srvDatabase._inserirRegistrosEmBatch(params);
+
+		String camposSelect[] = {"id", "status", "remetente"};
+		String[] camposParaOrdenacao = {"id"};
+		LinkedHashSet<EspecificacaoCampo> restricoes = new LinkedHashSet<>();
+		restricoes.add(new EspecificacaoCampo("remetente", "10", "Integer"));
+		
+		List<Map<String, Object>> valores = new ArrayList<>();
+		Map<String, Object> retorno = new HashMap<>();
+		
+		retorno.put("id", "6");
+		retorno.put("status", "11");
+		retorno.put("remetente", "10");
+		valores.add(retorno);
+		
+		retorno = new HashMap<>();
+		retorno.put("id", "7");
+		retorno.put("status", "12");
+		retorno.put("remetente", "10");
+		
+		valores.add(retorno);
+		
+		retorno = new HashMap<>();
+		retorno.put("id", "8");
+		retorno.put("status", "13");
+		retorno.put("remetente", "10");
+		
+		valores.add(retorno);
+		
+		when(this.jdbcTemplate.queryForList(Mockito.anyString())).thenReturn(valores);
+		
+		params = new DatabaseParamsDTO(camposSelect,tabela,null,restricoes,camposParaOrdenacao);
+		List<Map<String,String>> registroAlterado = this.srvDatabase._selecioneVariosRegistros(params);
+		
+		assertEquals(valores, registroAlterado);
+		verify(this.namedParameterJdbcTemplate, times(1)).batchUpdate(Mockito.anyString(), Mockito.any(Map[].class));
+		verifyNoMoreInteractions(this.namedParameterJdbcTemplate);		
 	}
 }

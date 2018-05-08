@@ -80,6 +80,4 @@ public class EspecificacaoCampo {
 		
 		return classes.get(this.tipoDoCampo.toLowerCase());
 	}
-	
-
 }
